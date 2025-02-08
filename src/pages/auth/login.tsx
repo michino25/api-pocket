@@ -1,12 +1,13 @@
 import { Button, Form, Input, Typography } from "antd";
+import { signIn } from "next-auth/react";
 import React from "react";
 
 const { Title } = Typography;
 
 const Login: React.FC = () => {
   const onFinish = (values: any) => {
-    console.log("Received values of form: ", values);
-    // Tích hợp API call đến /api/auth/login hoặc xử lý với next-auth sau
+    // Xử lý đăng nhập bằng credentials (nếu cần)
+    console.log("Credentials:", values);
   };
 
   return (
@@ -33,6 +34,23 @@ const Login: React.FC = () => {
           </Button>
         </Form.Item>
       </Form>
+
+      <div style={{ marginTop: 20 }}>
+        <Button
+          type="default"
+          onClick={() => signIn("google")}
+          style={{ width: "100%", marginBottom: 8 }}
+        >
+          Đăng nhập bằng Google
+        </Button>
+        <Button
+          type="default"
+          onClick={() => signIn("github")}
+          style={{ width: "100%" }}
+        >
+          Đăng nhập bằng GitHub
+        </Button>
+      </div>
     </div>
   );
 };
