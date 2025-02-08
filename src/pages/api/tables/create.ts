@@ -1,3 +1,5 @@
+// src/pages/api/tables/create.ts
+
 import type { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "../../../lib/dbConnect";
 import Table from "../../../models/Table";
@@ -7,13 +9,10 @@ export default async function handler(
   res: NextApiResponse
 ) {
   await dbConnect();
-
-  if (req.method !== "POST") {
+  if (req.method !== "POST")
     return res.status(405).json({ message: "Method not allowed" });
-  }
 
   const { tableName, fields, owner } = req.body;
-
   if (!tableName || !fields || !owner) {
     return res.status(400).json({ message: "Missing required fields" });
   }

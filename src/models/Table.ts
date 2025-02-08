@@ -1,6 +1,7 @@
+// src/models/Table.ts
+
 import mongoose, { Schema, Document } from "mongoose";
 
-// Định nghĩa interface cho Field
 export interface IField {
   fieldName: string;
   fieldKey: string;
@@ -8,16 +9,14 @@ export interface IField {
   isPrimaryKey?: boolean;
 }
 
-// Định nghĩa interface cho Table
 export interface ITable extends Document {
   tableName: string;
-  owner: string; // Có thể là user id hoặc username
+  owner: string;
   fields: IField[];
   createdAt: Date;
   updatedAt: Date;
 }
 
-// Schema cho Field (subdocument)
 const FieldSchema: Schema = new Schema({
   fieldName: { type: String, required: true },
   fieldKey: { type: String, required: true },
@@ -29,7 +28,6 @@ const FieldSchema: Schema = new Schema({
   isPrimaryKey: { type: Boolean, default: false },
 });
 
-// Schema cho Table
 const TableSchema: Schema = new Schema(
   {
     tableName: { type: String, required: true },
@@ -38,6 +36,9 @@ const TableSchema: Schema = new Schema(
   },
   { timestamps: true }
 );
+
+// Thiết lập compound index: mỗi owner chỉ được có mỗi tableName duy nhất
+TableSchema.index({ owner: 1, tableName: 1 }, { unique: true });
 
 export default mongoose.models.Table ||
   mongoose.model<ITable>("Table", TableSchema);

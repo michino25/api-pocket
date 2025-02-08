@@ -1038,6 +1038,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/bcryptjs@npm:^2.4.6":
+  version: 2.4.6
+  resolution: "@types/bcryptjs@npm:2.4.6"
+  checksum: 25ae1fd1e8a9bd688e22a8de905581d6d7bf26e823b797f895d2c488100b1f15d3c12a7d1a94f553087b010d316bf3978106df860e8e58fd13f52b4c708df5fd
+  languageName: node
+  linkType: hard
+
 "@types/conventional-commits-parser@npm:^5.0.0":
   version: 5.0.1
   resolution: "@types/conventional-commits-parser@npm:5.0.1"
@@ -1421,6 +1428,7 @@ __metadata:
     "@commitlint/cli": ^19.7.1
     "@commitlint/config-conventional": ^19.7.1
     "@eslint/eslintrc": ^3
+    "@types/bcryptjs": ^2.4.6
     "@types/node": ^20
     "@types/react": ^19
     "@types/react-dom": ^19

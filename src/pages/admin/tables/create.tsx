@@ -1,17 +1,20 @@
+// src/pages/admin/tables/create.tsx
+
 import React from "react";
 import { Form, Input, Button, Select, Checkbox, Card, message } from "antd";
 import AdminLayout from "../../../components/AdminLayout";
 import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
 
 const { Option } = Select;
 
 const CreateTable: React.FC = () => {
+  const { data: session } = useSession({ required: true });
   const [form] = Form.useForm();
   const router = useRouter();
 
   const onFinish = async (values: any) => {
-    // Giả sử tạm thời owner được gán cố định (sau này tích hợp session)
-    const payload = { ...values, owner: "testuser" };
+    const payload = { ...values, owner: session?.user?.email || "unknown" };
 
     try {
       const res = await fetch("/api/tables/create", {
@@ -19,28 +22,28 @@ const CreateTable: React.FC = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+      const json = await res.json();
       if (!res.ok) {
-        throw new Error("Error creating table");
+        throw new Error(json.message || "Failed to create table");
       }
-      const data = await res.json();
-      message.success("Bảng đã được tạo thành công!");
+      message.success("Table created successfully!");
       router.push("/admin/tables");
-    } catch (error) {
-      message.error("Tạo bảng thất bại");
+    } catch (error: any) {
+      message.error(error.message || "Error creating table");
       console.error(error);
     }
   };
 
   return (
     <AdminLayout>
-      <Card title="Tạo bảng mới">
+      <Card title="Create New Table">
         <Form form={form} onFinish={onFinish} layout="vertical">
           <Form.Item
             name="tableName"
-            label="Tên bảng"
-            rules={[{ required: true, message: "Vui lòng nhập tên bảng" }]}
+            label="Table Name"
+            rules={[{ required: true, message: "Please enter table name" }]}
           >
-            <Input placeholder="Tên bảng" />
+            <Input placeholder="Table Name" />
           </Form.Item>
           <Form.List name="fields">
             {(fields, { add, remove }) => (
@@ -50,26 +53,26 @@ const CreateTable: React.FC = () => {
                     <Form.Item
                       {...restField}
                       name={[name, "fieldName"]}
-                      label="Tên Field"
-                      rules={[{ required: true, message: "Nhập tên field" }]}
+                      label="Field Name"
+                      rules={[{ required: true, message: "Enter field name" }]}
                     >
-                      <Input placeholder="Tên Field" />
+                      <Input placeholder="Field Name" />
                     </Form.Item>
                     <Form.Item
                       {...restField}
                       name={[name, "fieldKey"]}
-                      label="Key Field"
-                      rules={[{ required: true, message: "Nhập key field" }]}
+                      label="Field Key"
+                      rules={[{ required: true, message: "Enter field key" }]}
                     >
-                      <Input placeholder="Key Field" />
+                      <Input placeholder="Field Key" />
                     </Form.Item>
                     <Form.Item
                       {...restField}
                       name={[name, "dataType"]}
-                      label="Kiểu dữ liệu"
-                      rules={[{ required: true, message: "Chọn kiểu dữ liệu" }]}
+                      label="Data Type"
+                      rules={[{ required: true, message: "Select data type" }]}
                     >
-                      <Select placeholder="Chọn kiểu dữ liệu">
+                      <Select placeholder="Select data type">
                         <Option value="string">String</Option>
                         <Option value="number">Number</Option>
                         <Option value="boolean">Boolean</Option>
@@ -82,18 +85,18 @@ const CreateTable: React.FC = () => {
                       {...restField}
                       name={[name, "isPrimaryKey"]}
                       valuePropName="checked"
-                      label="Khóa chính"
+                      label="Primary Key"
                     >
                       <Checkbox />
                     </Form.Item>
                     <Button type="link" onClick={() => remove(name)}>
-                      Xóa field
+                      Remove Field
                     </Button>
                   </Card>
                 ))}
                 <Form.Item>
                   <Button type="dashed" onClick={() => add()} block>
-                    Thêm field
+                    Add Field
                   </Button>
                 </Form.Item>
               </>
@@ -101,7 +104,7 @@ const CreateTable: React.FC = () => {
           </Form.List>
           <Form.Item>
             <Button type="primary" htmlType="submit">
-              Tạo bảng
+              Create Table
             </Button>
           </Form.Item>
         </Form>

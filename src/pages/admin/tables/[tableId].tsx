@@ -4,16 +4,18 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import AdminLayout from "../../../components/AdminLayout";
 import { Table, Button, Modal, Form, Input, message } from "antd";
+import { useSession } from "next-auth/react";
 
-interface IDataRecord {
+interface DataRecord {
   _id: string;
   data: any;
 }
 
 const TableDetail: React.FC = () => {
+  const { data: session } = useSession({ required: true });
   const router = useRouter();
   const { tableId } = router.query;
-  const [dataRecords, setDataRecords] = useState<IDataRecord[]>([]);
+  const [dataRecords, setDataRecords] = useState<DataRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
@@ -26,12 +28,14 @@ const TableDetail: React.FC = () => {
       const json = await res.json();
       if (json.success) {
         setDataRecords(json.data);
+      } else {
+        message.error("Failed to fetch data");
       }
     } catch (error) {
-      message.error("Lỗi khi tải dữ liệu");
-    } finally {
-      setLoading(false);
+      console.error(error);
+      message.error("Error fetching data");
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -44,53 +48,50 @@ const TableDetail: React.FC = () => {
       const res = await fetch(`/api/data/${tableId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: "testuser", data: values }), // userId tạm thời
+        body: JSON.stringify({ userId: session?.user?.email, data: values }),
       });
       const json = await res.json();
       if (json.success) {
-        message.success("Thêm dữ liệu thành công");
+        message.success("Data added successfully");
         setIsModalVisible(false);
         form.resetFields();
         fetchData();
       } else {
-        message.error("Thêm dữ liệu thất bại");
+        message.error("Failed to add data");
       }
     } catch (error) {
-      message.error("Lỗi khi thêm dữ liệu");
+      message.error("Error adding data");
+      console.error(error);
     }
   };
 
+  if (!tableId) return <p>Loading...</p>;
+
   const columns = [
-    {
-      title: "ID",
-      dataIndex: "_id",
-      key: "_id",
-    },
+    { title: "ID", dataIndex: "_id", key: "_id" },
     {
       title: "Data",
       dataIndex: "data",
       key: "data",
       render: (data: any) => JSON.stringify(data),
     },
-    // Bạn có thể thêm cột cho nút sửa, xóa
     {
-      title: "Hành động",
-      key: "action",
-      render: (_: any, record: IDataRecord) => (
+      title: "Actions",
+      key: "actions",
+      render: (_: any, record: DataRecord) => (
         <>
-          {/* Ví dụ: thêm nút Edit, Delete */}
           <Button
             type="link"
-            onClick={() => message.info("Chức năng sửa chưa hoàn thiện")}
+            onClick={() => message.info("Edit not implemented")}
           >
-            Sửa
+            Edit
           </Button>
           <Button
             type="link"
             danger
-            onClick={() => message.info("Chức năng xóa chưa hoàn thiện")}
+            onClick={() => message.info("Delete not implemented")}
           >
-            Xóa
+            Delete
           </Button>
         </>
       ),
@@ -99,13 +100,13 @@ const TableDetail: React.FC = () => {
 
   return (
     <AdminLayout>
-      <h2>Quản lý dữ liệu cho bảng: {tableId}</h2>
+      <h2>Data Management for Table: {tableId}</h2>
       <Button
         type="primary"
         onClick={() => setIsModalVisible(true)}
         style={{ marginBottom: 16 }}
       >
-        Thêm dữ liệu
+        Add Data
       </Button>
       <Table
         dataSource={dataRecords}
@@ -113,31 +114,25 @@ const TableDetail: React.FC = () => {
         rowKey="_id"
         loading={loading}
       />
-
       <Modal
-        title="Thêm dữ liệu mới"
-        visible={isModalVisible}
+        title="Add New Data"
+        open={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         footer={null}
       >
         <Form form={form} layout="vertical" onFinish={handleAdd}>
-          {/* Ở đây, để đơn giản, bạn có thể nhập dữ liệu dưới dạng JSON string,
-              hoặc tạo form động dựa trên cấu hình bảng. */}
           <Form.Item
             name="jsonData"
-            label="Dữ liệu (JSON)"
+            label="Data (JSON)"
             rules={[
-              {
-                required: true,
-                message: "Vui lòng nhập dữ liệu dưới dạng JSON",
-              },
+              { required: true, message: "Please enter valid JSON data" },
             ]}
           >
-            <Input.TextArea rows={4} placeholder='{"key": "value", ...}' />
+            <Input.TextArea rows={4} placeholder='{"key": "value"}' />
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">
-              Thêm dữ liệu
+              Add Data
             </Button>
           </Form.Item>
         </Form>

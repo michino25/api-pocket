@@ -1,3 +1,5 @@
+// src/pages/api/[username]/[tableName]/[[...action]].ts
+
 import type { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "../../../../lib/dbConnect";
 import Table from "../../../../models/Table";
@@ -37,7 +39,7 @@ export default async function handler(
   const recordId =
     Array.isArray(action) && action.length > 0 ? action[0] : null;
 
-  // Tìm bảng trong cơ sở dữ liệu dựa vào tableName và owner (username)
+  // Tìm bảng trong cơ sở dữ liệu dựa vào tableName và owner
   const table = await Table.findOne({ tableName, owner: username });
   if (!table) {
     return res.status(404).json({ message: "Table not found." });

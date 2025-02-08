@@ -1,55 +1,81 @@
-import { Button, Form, Input, Typography } from "antd";
-import { signIn } from "next-auth/react";
+// src/pages/auth/login.tsx
+
+import { Button, Form, Input, Typography, message } from "antd";
+import { signIn, useSession } from "next-auth/react";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import React from "react";
 
 const { Title } = Typography;
 
 const Login: React.FC = () => {
-  const onFinish = (values: any) => {
-    // Xử lý đăng nhập bằng credentials (nếu cần)
-    console.log("Credentials:", values);
+  const router = useRouter();
+  const { data: session, status } = useSession();
+
+  // Nếu đã đăng nhập, chuyển hướng sang Dashboard
+  if (status === "authenticated") {
+    router.push("/admin/dashboard");
+    return null;
+  }
+
+  const onFinish = async (values: any) => {
+    // Sử dụng signIn từ NextAuth cho đăng nhập bằng credentials
+    const res = await signIn("credentials", {
+      redirect: false,
+      email: values.email,
+      password: values.password,
+      callbackUrl: "/admin/dashboard",
+    });
+
+    if (res?.error) {
+      message.error(res.error);
+    } else {
+      router.push(res?.url || "/admin/dashboard");
+    }
   };
 
   return (
     <div style={{ maxWidth: 400, margin: "0 auto", padding: "50px" }}>
-      <Title level={2}>Đăng nhập / Đăng ký</Title>
+      <Title level={2}>Login / Sign In</Title>
       <Form name="loginForm" onFinish={onFinish} layout="vertical">
         <Form.Item
-          name="username"
-          label="Username"
-          rules={[{ required: true, message: "Vui lòng nhập username!" }]}
+          name="email"
+          label="Email"
+          rules={[{ required: true, message: "Please enter your email" }]}
         >
-          <Input placeholder="Nhập username" />
+          <Input placeholder="Email" />
         </Form.Item>
         <Form.Item
           name="password"
           label="Password"
-          rules={[{ required: true, message: "Vui lòng nhập password!" }]}
+          rules={[{ required: true, message: "Please enter your password" }]}
         >
-          <Input.Password placeholder="Nhập password" />
+          <Input.Password placeholder="Password" />
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" block>
-            Đăng nhập
+            Sign In
           </Button>
         </Form.Item>
       </Form>
-
       <div style={{ marginTop: 20 }}>
         <Button
           type="default"
-          onClick={() => signIn("google")}
+          onClick={() => signIn("google", { callbackUrl: "/admin/dashboard" })}
           style={{ width: "100%", marginBottom: 8 }}
         >
-          Đăng nhập bằng Google
+          Sign in with Google
         </Button>
         <Button
           type="default"
-          onClick={() => signIn("github")}
+          onClick={() => signIn("github", { callbackUrl: "/admin/dashboard" })}
           style={{ width: "100%" }}
         >
-          Đăng nhập bằng GitHub
+          Sign in with GitHub
         </Button>
+      </div>
+      <div style={{ marginTop: 20, textAlign: "center" }}>
+        <Link href="/auth/register">Don't have an account? Register here</Link>
       </div>
     </div>
   );
