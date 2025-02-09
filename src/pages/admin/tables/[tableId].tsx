@@ -1,6 +1,6 @@
 // src/pages/admin/tables/[tableId].tsx
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import AdminLayout from "../../../components/AdminLayout";
 import { Table, Button, Modal, Form, Input, message } from "antd";
@@ -20,7 +20,7 @@ const TableDetail: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     if (!tableId || typeof tableId !== "string") return;
     setLoading(true);
     try {
@@ -36,11 +36,11 @@ const TableDetail: React.FC = () => {
       message.error("Error fetching data");
     }
     setLoading(false);
-  };
+  }, [tableId]);
 
   useEffect(() => {
     fetchData();
-  }, [tableId]);
+  }, [fetchData, tableId]);
 
   const handleAdd = async (values: any) => {
     if (!tableId || typeof tableId !== "string") return;

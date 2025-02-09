@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Layout, Menu, Button } from "antd";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
