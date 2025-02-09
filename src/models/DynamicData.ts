@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface IDynamicData extends Document {
   tableId: string;
   userId: string;
-  data: any; // sử dụng Schema.Types.Mixed để lưu dữ liệu động (object, array, v.v.)
+  data: unknown;
   _deleted?: boolean;
   createdAt: Date;
   updatedAt: Date;

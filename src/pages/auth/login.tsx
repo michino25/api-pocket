@@ -75,7 +75,9 @@ const Login: React.FC = () => {
         </Button>
       </div>
       <div style={{ marginTop: 20, textAlign: "center" }}>
-        <Link href="/auth/register">Don't have an account? Register here</Link>
+        <Link href="/auth/register">
+          Don&apos;t have an account? Register here
+        </Link>
       </div>
     </div>
   );

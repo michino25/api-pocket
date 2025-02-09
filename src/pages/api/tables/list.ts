@@ -2,7 +2,7 @@
 
 import type { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "../../../lib/dbConnect";
-import Table from "../../../models/Table";
+import Table from "@/models/Table";
 
 export default async function handler(
   req: NextApiRequest,
