@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import { Layout, Menu, Button } from "antd";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
@@ -34,13 +34,13 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         </div>
         <Menu theme="dark" mode="inline" defaultSelectedKeys={["dashboard"]}>
           <Menu.Item key="dashboard" icon={<DashboardOutlined />}>
-            <Link href="/admin/dashboard">Dashboard</Link>
+            <Link href="/dashboard">Dashboard</Link>
           </Menu.Item>
           <Menu.Item key="tables" icon={<TableOutlined />}>
-            <Link href="/admin/tables">Tables</Link>
+            <Link href="/tables">Tables</Link>
           </Menu.Item>
           <Menu.Item key="api-docs" icon={<FileTextOutlined />}>
-            <Link href="/admin/api-docs">API Docs</Link>
+            <Link href="/api-docs">API Docs</Link>
           </Menu.Item>
         </Menu>
       </Sider>

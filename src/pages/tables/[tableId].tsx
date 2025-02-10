@@ -2,9 +2,9 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import AdminLayout from "../../../components/AdminLayout";
 import { Table, Button, Modal, Form, Input, message } from "antd";
 import { useSession } from "next-auth/react";
+import AdminLayout from "@/components/AdminLayout";
 
 interface DataRecord {
   _id: string;
