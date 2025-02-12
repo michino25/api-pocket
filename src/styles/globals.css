@@ -42,3 +42,7 @@ body {
   padding-inline: 0.6em;
   padding-block: 0.5em 0.5em;
 }
+
+h5.ant-typography {
+  @apply mt-3;
+}

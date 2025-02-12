@@ -6,7 +6,7 @@ import type { DocumentContext } from "next/document";
 const MyDocument = () => (
   <Html lang="en">
     <Head />
-    <body className="antialiased">
+    <body className="m-0 antialiased">
       <Main />
       <NextScript />
     </body>

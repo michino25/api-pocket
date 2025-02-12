@@ -63,7 +63,7 @@ export default NextAuth({
     },
     async session({ session, token }) {
       if (token && session.user) {
-        (session.user as { id: string }).id = token.id as string;
+        session.user.id = token.id as string;
       }
       return session;
     },

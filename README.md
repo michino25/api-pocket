@@ -1,40 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# API Pocket
+
+**API Pocket** is a powerful tool that allows users to create APIs quickly without the complexity of setting up a backend or database. With just a few clicks, you can create tables, manage schemas, and generate APIs right from the UI.
+
+The platform supports **RESTful operations**:  
+`GET` | `POST` | `PUT` | `PATCH` | `DELETE`
+
+API Pocket is live and available at: https://apipocket.vercel.app/ – Try it now!
+
+## Features
+
+- **Quick API Creation** – Define tables and generate APIs instantly.
+- **OAuth Login** – Secure authentication with OAuth.
+- **Schema & Data Management** – Easily modify tables, fields, and records.
+- **API Documentation** – Auto-generated API docs for your endpoints.
+- **Access Control** – Enable or disable APIs as needed.
+- **User Settings** – Change username and personal preferences.
 
 ## Getting Started
 
-First, run the development server:
+First, clone the repository and install dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/michino25/api-pocket
+cd api-pocket
+yarn install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then, start the development server:
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+```bash
+yarn dev
+```
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+Open [http://localhost:3000](http://localhost:3000) in your browser to access the app.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+## API Setup Guide
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Login via OAuth**
+   - Sign in using your preferred OAuth provider.
+2. **Create a Table**
 
-## Learn More
+   - Define your data structure (columns, types, etc.).
 
-To learn more about Next.js, take a look at the following resources:
+3. **Generate API Endpoints**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+   - Automatically get `GET`, `POST`, `PUT`, `PATCH`, and `DELETE` routes.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. **Manage Data**
 
-## Deploy on Vercel
+   - Insert, update, and delete records with an intuitive UI.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+5. **Access API Docs**
+   - View and test APIs directly from the documentation.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+## Commit Convention
+
+This project follows [Conventional Commits](https://www.conventionalcommits.org/). Here are the common commit types:
+
+- **feat** – New feature
+- **fix** – Bug fix
+- **docs** – Documentation updates
+- **style** – Code style changes (formatting, missing semicolons, etc.)
+- **refactor** – Code improvements without changing behavior
+- **test** – Adding or updating tests
+- **chore** – Maintenance tasks (build scripts, dependencies, etc.)
+- **ci** – Continuous integration updates
+- **perf** – Performance improvements
+- **revert** – Revert a previous commit
+
+Example commit message:
+
+```bash
+git commit -m "feat: add API toggle functionality"
+```
+
+## Upcoming Features
+
+- **Dark Mode** – Toggle between light and dark themes.
+- **Multi-language Support** – Switch between different languages.
+- **Enhanced API Docs** – Improved documentation experience.
+- **API Toggle** – Enable or disable specific APIs when needed.
+- **User Settings** – Change username and preferences.
+- **Data Filters** – Advanced filtering for querying data.
