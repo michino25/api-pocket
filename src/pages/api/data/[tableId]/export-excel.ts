@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "../../../../lib/dbConnect";
-import DynamicData from "../../../../models/DynamicData";
+import Data from "../../../../models/Data";
 import ExcelJS from "exceljs";
 
 export default async function handler(
@@ -16,7 +16,7 @@ export default async function handler(
 
   try {
     // Lấy dữ liệu của bảng (chỉ lấy các bản ghi chưa bị xóa mềm)
-    const records = await DynamicData.find({ tableId, _deleted: false });
+    const records = await Data.find({ tableId, _deleted: false });
 
     // Tạo workbook và worksheet
     const workbook = new ExcelJS.Workbook();

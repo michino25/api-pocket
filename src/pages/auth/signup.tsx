@@ -18,7 +18,8 @@ import {
 } from "@ant-design/icons";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import { useNotification } from "@/hooks/useNotification";
 
 const { Title, Text } = Typography;
 
@@ -34,14 +35,21 @@ const SignupPage: React.FC = () => {
   const router = useRouter();
   const [form] = Form.useForm();
   const [loading, setLoading] = React.useState(false);
+  const notification = useNotification();
+
+  const { status } = useSession();
+  if (status === "authenticated") {
+    router.push("/tables");
+    return null;
+  }
 
   // Handle form submission
   const onFinish = async (values: SignupFormValues) => {
     try {
       setLoading(true);
 
-      // Register user via API
-      const res = await fetch("/api/auth/register", {
+      // Sign up user via API
+      const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -59,7 +67,6 @@ const SignupPage: React.FC = () => {
         throw new Error(data.message || "Something went wrong");
       }
 
-      // Auto login after successful registration
       const result = await signIn("credentials", {
         redirect: false,
         email: values.email,
@@ -70,10 +77,10 @@ const SignupPage: React.FC = () => {
         throw new Error(result.error);
       }
 
-      message.success("Account created successfully!");
-      router.push("/dashboard");
-    } catch (error: any) {
-      message.error(error.message || "Error during registration");
+      notification.success("Account created successfully!");
+      router.push("/tables");
+    } catch (error) {
+      notification.error("Error during registration");
     } finally {
       setLoading(false);
     }
@@ -82,7 +89,7 @@ const SignupPage: React.FC = () => {
   // Handle social signup
   const handleSocialSignup = async (provider: "github" | "google") => {
     try {
-      await signIn(provider, { callbackUrl: "/dashboard" });
+      await signIn(provider, { callbackUrl: "/tables" });
     } catch (error) {
       message.error(
         `${
@@ -216,7 +223,10 @@ const SignupPage: React.FC = () => {
           <div className="text-center mt-4">
             <Text className="text-gray-500">
               Already have an account?{" "}
-              <Link href="/login" className="text-blue-500 hover:text-blue-600">
+              <Link
+                href="/auth/signin"
+                className="text-blue-500 hover:text-blue-600"
+              >
                 Sign in
               </Link>
             </Text>

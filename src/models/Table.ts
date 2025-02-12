@@ -1,17 +1,16 @@
-// src/models/Table.ts
-
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IField {
   fieldName: string;
   fieldKey: string;
-  dataType: "string" | "number" | "boolean" | "date" | "object" | "array";
-  isPrimaryKey?: boolean;
+  dataType: "string" | "number" | "boolean" | "date";
+  isRequired: boolean;
+  isPrimaryKey: boolean;
 }
 
 export interface ITable extends Document {
   tableName: string;
-  owner: string;
+  owner: mongoose.Types.ObjectId;
   fields: IField[];
   createdAt: Date;
   updatedAt: Date;
@@ -23,22 +22,20 @@ const FieldSchema: Schema = new Schema({
   dataType: {
     type: String,
     required: true,
-    enum: ["string", "number", "boolean", "date", "object", "array"],
+    enum: ["string", "number", "boolean", "date"],
   },
-  isPrimaryKey: { type: Boolean, default: false },
+  isRequired: { type: Boolean, required: true },
+  isPrimaryKey: { type: Boolean, required: true },
 });
 
 const TableSchema: Schema = new Schema(
   {
     tableName: { type: String, required: true },
-    owner: { type: String, required: true },
+    owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
     fields: [FieldSchema],
   },
   { timestamps: true }
 );
-
-// Thiết lập compound index: mỗi owner chỉ được có mỗi tableName duy nhất
-TableSchema.index({ owner: 1, tableName: 1 }, { unique: true });
 
 export default mongoose.models.Table ||
   mongoose.model<ITable>("Table", TableSchema);

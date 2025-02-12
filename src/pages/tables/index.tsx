@@ -1,73 +1,128 @@
-// src/pages/admin/tables.tsx
-
-import React, { useEffect, useState } from "react";
-import AdminLayout from "../../components/AdminLayout";
-import { Table, Button, message } from "antd";
-import Link from "next/link";
+import React, { useEffect } from "react";
 import { useSession } from "next-auth/react";
-
-interface TableData {
-  _id: string;
-  tableName: string;
-}
+import { useQuery } from "@/hooks/useQuery";
+import API_ROUTES from "@/commons/apis";
+import CustomButton from "@/components/common/CustomButton";
+import { ColumnsType } from "antd/es/table";
+import { splitString } from "../../utils/common";
+import { ITable } from "@/models/Table";
+import DeleteButton from "@/components/common/DeleteButton";
+import { formatToTimeString } from "@/utils/date";
+import { useSidebarTableStore } from "@/stores/useSidebarTableStore";
+import { useMutation } from "@/hooks/useMutation";
+import { useNotification } from "@/hooks/useNotification";
+import { Card } from "antd";
+import CustomTable from "@/components/common/CustomTable";
 
 const TableList: React.FC = () => {
-  const { data: session, status } = useSession({ required: true });
-  const [tables, setTables] = useState<TableData[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { data: session, status } = useSession();
+  const { setTables } = useSidebarTableStore();
+  const notification = useNotification();
+
+  const { data, isLoading, refetch } = useQuery({
+    url: API_ROUTES.SCHEMA.LIST,
+    config: { params: { ownerEmail: session?.user?.email } },
+    enabled: status === "authenticated",
+  });
 
   useEffect(() => {
-    if (session) {
-      const fetchTables = async () => {
-        setLoading(true);
-        try {
-          // Giả sử owner là email của user
-          const res = await fetch(
-            `/api/tables/list?owner=${session.user?.email}`
-          );
-          const json = await res.json();
-          if (json.success) {
-            setTables(json.data);
-          } else {
-            message.error("Failed to fetch tables");
-          }
-        } catch (error) {
-          console.error(error);
-          message.error("Error fetching tables");
-        }
-        setLoading(false);
-      };
-
-      fetchTables();
+    if (data?.data) {
+      setTables(data.data);
     }
-  }, [session]);
+  }, [data, setTables]);
 
-  if (status === "loading") return <p>Loading...</p>;
+  const { mutate: deleteTable, isMutating } = useMutation({
+    mutationFn: ({ _id }) => ({
+      method: "DELETE",
+      url: API_ROUTES.SCHEMA.DETAIL(_id),
+    }),
+    onSuccess: (_, { tableName }) => {
+      notification.success(`Table ${tableName} deleted successfully`);
+      refetch();
+    },
+    onError: (error) => {
+      notification.error(`Error: ${error.message}`);
+    },
+  });
+
+  const columns: ColumnsType<ITable> = [
+    {
+      title: "Table Name",
+      dataIndex: "tableName",
+    },
+    {
+      title: "Created At",
+      dataIndex: "createdAt",
+      align: "center",
+      render: formatToTimeString,
+    },
+    {
+      title: "Schema",
+      align: "center",
+      render: (_, { _id }) => {
+        const ids = splitString(_id as string);
+        return (
+          <CustomButton action="view" to={`/table/${ids[0]}/${ids[1]}/schema`}>
+            View Schema
+          </CustomButton>
+        );
+      },
+    },
+    {
+      title: "Data",
+      align: "center",
+      render: (_, { _id }) => {
+        const ids = splitString(_id as string);
+        return (
+          <CustomButton action="view" to={`/table/${ids[0]}/${ids[1]}/data`}>
+            View Data
+          </CustomButton>
+        );
+      },
+    },
+    {
+      title: "API Docs",
+      align: "center",
+      render: (_, { _id }) => {
+        const ids = splitString(_id as string);
+        return (
+          <CustomButton
+            action="view"
+            to={`/table/${ids[0]}/${ids[1]}/api-docs`}
+          >
+            View API Docs
+          </CustomButton>
+        );
+      },
+    },
+    {
+      title: "Delete",
+      align: "center",
+      render: (_, { _id, tableName }) => (
+        <DeleteButton
+          mutate={() => deleteTable({ _id, tableName })}
+          isPending={isMutating}
+          info={tableName}
+          type="primary"
+        >
+          Delete table
+        </DeleteButton>
+      ),
+    },
+  ];
 
   return (
-    <AdminLayout>
-      <h1>Your Tables</h1>
-      <Button type="primary" style={{ marginBottom: 16 }}>
-        <Link href="/admin/tables/create">Create New Table</Link>
-      </Button>
-      <Table
-        dataSource={tables}
-        rowKey="_id"
-        loading={loading}
-        columns={[
-          { title: "Table Name", dataIndex: "tableName", key: "tableName" },
-          {
-            title: "Action",
-            key: "action",
-            render: (_, record) => (
-              <Button type="link">
-                <Link href={`/admin/tables/${record._id}`}>View Data</Link>
-              </Button>
-            ),
-          },
-        ]}
-      />
-    </AdminLayout>
+    <Card
+      title="Table List"
+      extra={
+        <CustomButton type="primary" to="/tables/create" action="add">
+          Create New Table
+        </CustomButton>
+      }
+      loading={isLoading}
+    >
+      <CustomTable data={data?.data} unit="table" columns={columns} />
+    </Card>
   );
 };
 

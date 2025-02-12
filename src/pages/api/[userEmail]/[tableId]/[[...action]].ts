@@ -1,12 +1,10 @@
-// src/pages/api/[username]/[tableName]/[[...action]].ts
-
 import type { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "../../../../lib/dbConnect";
 import Table from "../../../../models/Table";
-import DynamicData from "../../../../models/DynamicData";
+import Data from "../../../../models/Data";
 
 // Danh sách các username bị cấm (reserved)
-const reservedUsernames = ["data", "tables", "admin", "api", "auth"];
+const reservedUsernames = ["table", "tables", "api", "auth", "user-guide"];
 
 export default async function handler(
   req: NextApiRequest,
@@ -15,19 +13,19 @@ export default async function handler(
   await dbConnect();
 
   // Lấy các tham số từ URL
-  const { username, tableName, action } = req.query;
+  const { userEmail, tableId, action } = req.query;
 
   // Kiểm tra các tham số bắt buộc: username và tableName phải là string
-  if (typeof username !== "string" || typeof tableName !== "string") {
+  if (typeof userEmail !== "string" || typeof tableId !== "string") {
     return res.status(400).json({
-      message: "Username and tableName are required and must be strings.",
+      message: "User email and table id are required and must be strings.",
     });
   }
 
-  // Kiểm tra username: yêu cầu ít nhất 8 ký tự và không thuộc danh sách reserved
+  // Kiểm tra user email: yêu cầu ít nhất 8 ký tự và không thuộc danh sách reserved
   if (
-    username.length < 8 ||
-    reservedUsernames.includes(username.toLowerCase())
+    userEmail.length < 8 ||
+    reservedUsernames.includes(userEmail.toLowerCase())
   ) {
     return res.status(400).json({
       message:
@@ -40,7 +38,7 @@ export default async function handler(
     Array.isArray(action) && action.length > 0 ? action[0] : null;
 
   // Tìm bảng trong cơ sở dữ liệu dựa vào tableName và owner
-  const table = await Table.findOne({ tableName, owner: username });
+  const table = await Table.findById(tableId);
   if (!table) {
     return res.status(404).json({ message: "Table not found." });
   }
@@ -50,11 +48,24 @@ export default async function handler(
     if (!recordId) {
       if (req.method === "GET") {
         // Lấy danh sách dữ liệu cho bảng
-        const data = await DynamicData.find({
-          tableId: table._id.toString(),
-          _deleted: false,
-        });
-        return res.status(200).json({ success: true, data });
+        const data = await Data.find(
+          {
+            tableId: table._id.toString(),
+            _deleted: false,
+          },
+          "_id createdAt updatedAt data"
+        );
+
+        const formattedData = data.map(
+          ({ _id, createdAt, updatedAt, data }) => ({
+            _id,
+            createdAt,
+            updatedAt,
+            ...data,
+          })
+        );
+
+        return res.status(200).json({ success: true, data: formattedData });
       }
       if (req.method === "POST") {
         // Tạo mới bản ghi dữ liệu
@@ -64,7 +75,7 @@ export default async function handler(
             .status(400)
             .json({ message: "Missing required fields: userId or data." });
         }
-        const newRecord = await DynamicData.create({
+        const newRecord = await Data.create({
           tableId: table._id.toString(),
           userId,
           data,
@@ -75,7 +86,7 @@ export default async function handler(
     // Nếu có recordId, xử lý thao tác trên bản ghi cụ thể
     else {
       if (req.method === "GET") {
-        const record = await DynamicData.findOne({
+        const record = await Data.findOne({
           _id: recordId,
           tableId: table._id.toString(),
           _deleted: false,
@@ -86,7 +97,7 @@ export default async function handler(
         return res.status(200).json({ success: true, data: record });
       }
       if (req.method === "PUT") {
-        const updated = await DynamicData.findOneAndUpdate(
+        const updated = await Data.findOneAndUpdate(
           { _id: recordId, tableId: table._id.toString() },
           req.body,
           { new: true }
@@ -98,7 +109,7 @@ export default async function handler(
       }
       if (req.method === "DELETE") {
         // Thực hiện xóa mềm bản ghi
-        const deleted = await DynamicData.findOneAndUpdate(
+        const deleted = await Data.findOneAndUpdate(
           { _id: recordId, tableId: table._id.toString() },
           { _deleted: true },
           { new: true }

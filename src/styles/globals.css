@@ -19,3 +19,26 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.ant-card {
+  @apply border-none;
+}
+
+.ant-menu-sub {
+  @apply !rounded-2xl;
+}
+
+.ant-layout-sider-collapsed .ant-menu-item-group-title,
+.ant-layout-sider-collapsed .admin-layout-title {
+  @apply hidden;
+}
+
+.handle-button-position {
+  @apply sticky z-10 ml-auto w-fit bottom-6;
+}
+
+.ant-typography code {
+  @apply bg-gray-100 border-none rounded-lg;
+  padding-inline: 0.6em;
+  padding-block: 0.5em 0.5em;
+}

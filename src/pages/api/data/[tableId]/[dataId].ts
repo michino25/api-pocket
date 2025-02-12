@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "../../../../lib/dbConnect";
-import DynamicData from "../../../../models/DynamicData";
+import Data from "../../../../models/Data";
 
 export default async function handler(
   req: NextApiRequest,
@@ -17,7 +17,7 @@ export default async function handler(
   // GET: Lấy chi tiết 1 bản ghi
   if (req.method === "GET") {
     try {
-      const record = await DynamicData.findOne({
+      const record = await Data.findOne({
         _id: dataId,
         tableId,
         _deleted: false,
@@ -36,7 +36,7 @@ export default async function handler(
   // PUT: Cập nhật bản ghi
   if (req.method === "PUT") {
     try {
-      const updated = await DynamicData.findOneAndUpdate(
+      const updated = await Data.findOneAndUpdate(
         { _id: dataId, tableId },
         req.body,
         { new: true }
@@ -55,10 +55,9 @@ export default async function handler(
   // DELETE: Xóa mềm bản ghi (update _deleted: true)
   if (req.method === "DELETE") {
     try {
-      const deleted = await DynamicData.findOneAndUpdate(
+      const deleted = await Data.findOneAndUpdate(
         { _id: dataId, tableId },
-        { _deleted: true },
-        { new: true }
+        { _deleted: true }
       );
       if (!deleted) {
         return res.status(404).json({ message: "Record not found" });

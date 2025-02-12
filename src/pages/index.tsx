@@ -29,11 +29,15 @@ const LandingPage: React.FC = () => {
           </Title>
         </div>
         <Space>
-          <Link href="/auth/login">
-            <Button type="default">Login</Button>
+          <Link href="/auth/signup">
+            <Button size="large" type="default">
+              Sign Up
+            </Button>
           </Link>
-          <Link href="/auth/register">
-            <Button type="primary">Register</Button>
+          <Link href="/auth/signin">
+            <Button size="large" type="primary">
+              Sign In
+            </Button>
           </Link>
         </Space>
       </Header>
@@ -46,7 +50,7 @@ const LandingPage: React.FC = () => {
             Integrate reliable and fast APIs into your applications with ease.
           </Paragraph>
           <Space size="large">
-            <Link href="/auth/register">
+            <Link href="/auth/signup">
               <Button type="primary" size="large" icon={<RocketOutlined />}>
                 Get Started
               </Button>
@@ -100,7 +104,7 @@ const LandingPage: React.FC = () => {
           <Paragraph className="text-lg mb-8">
             Sign up for a free account and experience our service firsthand.
           </Paragraph>
-          <Link href="/auth/register">
+          <Link href="/auth/signup">
             <Button type="primary" size="large">
               Create Free Account
             </Button>

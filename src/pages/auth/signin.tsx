@@ -29,11 +29,10 @@ interface LoginFormValues {
 
 const LoginPage: React.FC = () => {
   const router = useRouter();
-  const { data: session, status } = useSession();
 
-  // Redirect authenticated users to the dashboard
+  const { status } = useSession();
   if (status === "authenticated") {
-    router.push("/dashboard");
+    router.push("/tables");
     return null;
   }
 
@@ -44,13 +43,13 @@ const LoginPage: React.FC = () => {
         redirect: false,
         email: values.email,
         password: values.password,
-        callbackUrl: "/dashboard",
+        callbackUrl: "/tables",
       });
 
       if (res?.error) {
         message.error(res.error);
       } else {
-        router.push(res?.url || "/dashboard");
+        router.push(res?.url || "/tables");
       }
     } catch (error) {
       message.error("Login failed. Please try again.");
@@ -60,7 +59,7 @@ const LoginPage: React.FC = () => {
   // Handle social login
   const handleSocialLogin = async (provider: "google" | "github") => {
     try {
-      await signIn(provider, { callbackUrl: "/dashboard" });
+      await signIn(provider, { callbackUrl: "/tables" });
     } catch (error) {
       message.error(
         `${
@@ -149,10 +148,10 @@ const LoginPage: React.FC = () => {
             <Text className="text-gray-500">
               Don&apos;t have an account?{" "}
               <Link
-                href="/auth/register"
+                href="/auth/signup"
                 className="text-blue-500 hover:text-blue-600"
               >
-                Register here
+                Sign up here
               </Link>
             </Text>
           </div>

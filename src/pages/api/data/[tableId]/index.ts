@@ -1,6 +1,7 @@
+import dbConnect from "@/lib/dbConnect";
+import Data from "@/models/Data";
+import User from "@/models/User";
 import type { NextApiRequest, NextApiResponse } from "next";
-import dbConnect from "../../../lib/dbConnect";
-import DynamicData from "../../../models/DynamicData";
 
 export default async function handler(
   req: NextApiRequest,
@@ -17,7 +18,7 @@ export default async function handler(
   // Xử lý GET: Lấy danh sách dữ liệu của bảng
   if (req.method === "GET") {
     try {
-      const data = await DynamicData.find({ tableId, _deleted: false });
+      const data = await Data.find({ tableId, _deleted: false });
       return res.status(200).json({ success: true, data });
     } catch (error) {
       return res
@@ -28,14 +29,19 @@ export default async function handler(
 
   // Xử lý POST: Tạo dữ liệu mới cho bảng
   if (req.method === "POST") {
-    const { userId, data } = req.body;
-    if (!userId || !data) {
+    const { userEmail, data } = req.body;
+    if (!userEmail || !data) {
       return res
         .status(400)
-        .json({ message: "Missing required fields: userId or data" });
+        .json({ message: "Missing required fields: userEmail or data" });
     }
     try {
-      const newData = await DynamicData.create({ tableId, userId, data });
+      const user = await User.findOne({ email: userEmail });
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const newData = await Data.create({ tableId, userId: user._id, data });
       return res.status(201).json({ success: true, data: newData });
     } catch (error) {
       return res
