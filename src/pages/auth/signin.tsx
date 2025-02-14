@@ -18,6 +18,8 @@ import {
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import Image from "next/image";
+import CustomButton from "@/components/common/CustomButton";
 
 const { Title, Text } = Typography;
 
@@ -71,9 +73,21 @@ const LoginPage: React.FC = () => {
 
   return (
     <Layout className="min-h-screen bg-gray-50">
-      <div className="max-w-md mx-auto pt-24 px-4">
+      <div className="max-w-md mx-auto my-auto p-5">
         <Card className="w-full shadow-md">
           {/* Header */}
+          <div className="flex items-center justify-center">
+            <CustomButton to="/" type="link" className="w-full h-full">
+              <Image
+                src="/transparent-logo.webp"
+                alt="API Pocket logo"
+                width={64}
+                height={64}
+                priority
+              />
+            </CustomButton>
+          </div>
+
           <div className="text-center mb-8">
             <Title level={2}>Welcome Back</Title>
             <Text className="text-gray-500">Sign in to your account</Text>

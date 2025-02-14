@@ -139,7 +139,7 @@ const AdminPanelLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   }, [router, status]);
 
   return (
-    <Layout className="h-screen">
+    <Layout className="layout h-screen">
       <Sider
         theme="light"
         className="pl-3 h-screen select-none [&_.ant-layout-sider-children]:flex [&_.ant-layout-sider-children]:flex-col"
@@ -150,7 +150,7 @@ const AdminPanelLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           className="flex items-center w-full justify-center py-3"
         >
           <Image
-            src="/transparent-logo.png"
+            src="/transparent-logo.webp"
             alt="API Pocket logo"
             width={32}
             height={32}

@@ -20,7 +20,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.ant-card {
+.layout .ant-card {
   @apply border-none;
 }
 

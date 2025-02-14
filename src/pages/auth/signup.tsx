@@ -20,6 +20,8 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
 import { useNotification } from "@/hooks/useNotification";
+import CustomButton from "@/components/common/CustomButton";
+import Image from "next/image";
 
 const { Title, Text } = Typography;
 
@@ -101,9 +103,21 @@ const SignupPage: React.FC = () => {
 
   return (
     <Layout className="min-h-screen bg-gray-50">
-      <div className="max-w-md mx-auto pt-24 px-4">
+      <div className="max-w-md mx-auto my-auto px-4">
         <Card className="w-full shadow-md">
           {/* Header */}
+          <div className="flex items-center justify-center">
+            <CustomButton to="/" type="link" className="w-full h-full">
+              <Image
+                src="/transparent-logo.webp"
+                alt="API Pocket logo"
+                width={64}
+                height={64}
+                priority
+              />
+            </CustomButton>
+          </div>
+
           <div className="text-center mb-8">
             <Title level={2}>Create Account</Title>
             <Text className="text-gray-500">Get started with our service</Text>
