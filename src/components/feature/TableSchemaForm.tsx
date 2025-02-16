@@ -12,6 +12,7 @@ import CustomTable from "../common/CustomTable";
 import CustomButton from "../common/CustomButton";
 import { ColumnsType } from "antd/es/table";
 import { IField } from "@/models/Table";
+import validator from "@/utils/validate";
 
 const DATA_TYPES = [
   { value: "string", label: "String" },
@@ -19,6 +20,14 @@ const DATA_TYPES = [
   { value: "boolean", label: "Boolean" },
   { value: "date", label: "Date" },
 ];
+
+const DEFAULT_FIELD = {
+  fieldName: null,
+  fieldKey: null,
+  dataType: null,
+  isRequired: null,
+  isPrimaryKey: null,
+};
 
 interface ITableSchemaForm {
   form: FormInstance;
@@ -50,6 +59,7 @@ const TableSchemaForm = ({
       render: (_, __, index) => (
         <Form.Item
           name={[index, "isPrimaryKey"]}
+          rules={validator("required")}
           valuePropName="checked"
           noStyle
         >
@@ -64,7 +74,7 @@ const TableSchemaForm = ({
       render: (_, __, index) => (
         <Form.Item
           name={[index, "fieldName"]}
-          rules={[{ required: true, message: "Enter field name" }]}
+          rules={validator("required")}
           noStyle
         >
           <Input placeholder="Enter field Name" />
@@ -78,7 +88,7 @@ const TableSchemaForm = ({
       render: (_, __, index) => (
         <Form.Item
           name={[index, "fieldKey"]}
-          rules={[{ required: true, message: "Enter field key" }]}
+          rules={validator("required")}
           noStyle
         >
           <Input placeholder="Enter field key" />
@@ -92,7 +102,7 @@ const TableSchemaForm = ({
       render: (_, __, index) => (
         <Form.Item
           name={[index, "dataType"]}
-          rules={[{ required: true, message: "Select data type" }]}
+          rules={validator("required")}
           noStyle
         >
           <Select
@@ -109,7 +119,12 @@ const TableSchemaForm = ({
       width: "15%",
       align: "center",
       render: (_, __, index) => (
-        <Form.Item name={[index, "isRequired"]} valuePropName="checked" noStyle>
+        <Form.Item
+          name={[index, "isRequired"]}
+          rules={validator("required")}
+          valuePropName="checked"
+          noStyle
+        >
           <Checkbox />
         </Form.Item>
       ),
@@ -134,15 +149,7 @@ const TableSchemaForm = ({
       layout="vertical"
       initialValues={
         initialValues || {
-          fields: [
-            {
-              fieldName: null,
-              fieldKey: null,
-              dataType: null,
-              isRequired: null,
-              isPrimaryKey: null,
-            },
-          ],
+          fields: [DEFAULT_FIELD],
         }
       }
       {...rest}
@@ -169,7 +176,7 @@ const TableSchemaForm = ({
               <CustomButton
                 action="add"
                 type="dashed"
-                onClick={() => add()}
+                onClick={() => add(DEFAULT_FIELD)}
                 block
                 className="mt-4"
               >

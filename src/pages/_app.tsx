@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import AdminPanelLayout from "@/components/layout/AdminPanelLayout";
 import { Fragment } from "react";
 import { NotificationProvider } from "@/hooks/useNotification";
+import { Analytics } from "@vercel/analytics/next";
 
 function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   const router = useRouter();
@@ -36,6 +37,7 @@ function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
           <title>API Pocket</title>
         </Head>
         <SessionProvider session={session}>
+          <Analytics />
           <Layout>
             <Component {...pageProps} />
           </Layout>
