@@ -28,6 +28,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/bcryptjs": "^2.4.6",
+    "@types/next": "^9.0.0",
     "@types/node": "^20",
     "@types/numeral": "^2.0.5",
     "@types/react": "^19",
@@ -35,6 +36,7 @@
     "autoprefixer": "^10.4.20",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
+    "eslint-plugin-react-hooks": "^5.1.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
