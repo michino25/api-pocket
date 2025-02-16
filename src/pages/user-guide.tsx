@@ -93,16 +93,33 @@ const UserGuide = () => {
           dataSource={[
             "- Quick API creation: Automatically generate APIs from data tables.",
             "- Secure authentication: Sign in using username/password or OAuth.",
+            "- API security: All API endpoints are protected with x-api-key authentication.",
             "- Data management: Easily add, update, and delete records.",
             "- API documentation: View and test API endpoints within the UI.",
+          ]}
+          renderItem={(item) => <List.Item>{item}</List.Item>}
+          split={false}
+        />
+        <Divider />
+        {/* Upcoming Features */}
+        <Title level={5}>Upcoming Features</Title>
+        <List
+          itemLayout="horizontal"
+          className="[&_.ant-list-item]:m-0 [&_.ant-list-item]:py-1"
+          dataSource={[
             "- Access control: Enable or disable APIs as needed.",
+            "- Dark Mode: Toggle between light and dark themes.",
+            "- Multi-language support: Switch between different languages.",
+            "- User Settings: More customization options for user preferences.",
           ]}
           renderItem={(item) => <List.Item>{item}</List.Item>}
           split={false}
         />
         <Divider />
         {/* User Guide */}
-        <Title level={5}>How to Use API Pocket</Title>
+        <Title level={5} className="mb-5">
+          How to Use API Pocket
+        </Title>
         <Collapse
           accordion
           items={collapseItems}

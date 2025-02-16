@@ -10,11 +10,18 @@ API Pocket is live and available at: https://apipocket.vercel.app/ – Try it no
 ## Features
 
 - **Quick API Creation** – Define tables and generate APIs instantly.
-- **OAuth Login** – Secure authentication with OAuth.
+- **Secure API Access** – All API endpoints are protected with `x-api-key` authentication.
+- **OAuth Login** – Secure authentication with OAuth or username/password.
 - **Schema & Data Management** – Easily modify tables, fields, and records.
 - **API Documentation** – Auto-generated API docs for your endpoints.
-- **Access Control** – Enable or disable APIs as needed.
-- **User Settings** – Change username and personal preferences.
+
+## Upcoming Features
+
+- **Dark Mode** – Toggle between light and dark themes.
+- **Multi-language Support** – Switch between different languages.
+- **API Toggle** – Enable or disable specific APIs when needed.
+- **User Settings** – More customization options for user preferences.
+- **Data Filters** – Advanced filtering for querying data.
 
 ## Getting Started
 
@@ -73,12 +80,3 @@ Example commit message:
 ```bash
 git commit -m "feat: add API toggle functionality"
 ```
-
-## Upcoming Features
-
-- **Dark Mode** – Toggle between light and dark themes.
-- **Multi-language Support** – Switch between different languages.
-- **Enhanced API Docs** – Improved documentation experience.
-- **API Toggle** – Enable or disable specific APIs when needed.
-- **User Settings** – Change username and preferences.
-- **Data Filters** – Advanced filtering for querying data.
