@@ -1,6 +1,5 @@
 import dbConnect from "@/lib/dbConnect";
 import Data from "@/models/Data";
-import User from "@/models/User";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -29,19 +28,14 @@ export default async function handler(
 
   // Xử lý POST: Tạo dữ liệu mới cho bảng
   if (req.method === "POST") {
-    const { userEmail, data } = req.body;
-    if (!userEmail || !data) {
+    const { userId, data } = req.body;
+    if (!userId || !data) {
       return res
         .status(400)
-        .json({ message: "Missing required fields: userEmail or data" });
+        .json({ message: "Missing required fields: userId or data" });
     }
     try {
-      const user = await User.findOne({ email: userEmail });
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      const newData = await Data.create({ tableId, userId: user._id, data });
+      const newData = await Data.create({ tableId, userId, data });
       return res.status(201).json({ success: true, data: newData });
     } catch (error) {
       return res

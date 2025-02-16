@@ -1,5 +1,6 @@
-import dbConnect from "../../../lib/dbConnect";
-import User from "../../../models/User";
+/* eslint-disable no-console */
+import dbConnect from "@/lib/dbConnect";
+import User from "@/models/User";
 import bcrypt from "bcryptjs";
 import { NextApiRequest, NextApiResponse } from "next";
 

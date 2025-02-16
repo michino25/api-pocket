@@ -9,7 +9,9 @@ interface PreProps {
 const Pre = ({ className, children }: PreProps) => {
   return (
     <div className={"relative " + className}>
-      <pre className="p-5 rounded-xl bg-gray-100">{children}</pre>
+      <pre className="p-5 pr-16 rounded-xl bg-gray-100 overflow-y-scroll">
+        {children}
+      </pre>
 
       <CopyButton
         copyText={children}

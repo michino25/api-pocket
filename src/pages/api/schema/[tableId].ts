@@ -1,4 +1,6 @@
+/* eslint-disable no-console */
 import dbConnect from "@/lib/dbConnect";
+import Data from "@/models/Data";
 import Table from "@/models/Table";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -69,21 +71,24 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
       // Xử lý DELETE request
       case "DELETE": {
-        const deletedTable = await Table.findByIdAndDelete(tableId);
+        const updatedTable = await Table.findByIdAndUpdate(tableId, {
+          _deleted: true,
+        });
 
-        if (!deletedTable) {
+        if (!updatedTable) {
           return res
             .status(404)
             .json({ success: false, message: "Không tìm thấy bảng để xóa" });
         }
 
+        await Data.updateMany({ tableId: tableId }, { _deleted: true });
+
         return res.status(200).json({
           success: true,
-          message: "Bảng đã được xóa thành công",
-          data: deletedTable,
+          message: "Bảng và dữ liệu liên quan đã được xóa thành công",
+          data: null,
         });
       }
-
       // Xử lý các method không được hỗ trợ
       default:
         res.setHeader("Allow", ["GET", "PUT", "DELETE"]);

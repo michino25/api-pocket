@@ -1,8 +1,72 @@
 import React from "react";
 import { Card, Typography, Divider, List, Collapse } from "antd";
-
 const { Title, Paragraph, Text } = Typography;
-const { Panel } = Collapse;
+
+const collapseItems = [
+  {
+    key: "1",
+    label: "1. Sign In or Create an Account",
+    children: (
+      <Paragraph>
+        - Go to{" "}
+        <a href="/auth/signin" target="_blank" rel="noreferrer">
+          API Pocket
+        </a>
+        .
+        <br />- If you already have an account, log in using your username and
+        password or an OAuth provider.
+        <br />- If you don&apos;t have an account, click Sign Up and follow the
+        registration steps.
+      </Paragraph>
+    ),
+  },
+  {
+    key: "2",
+    label: "2. Create a Data Table",
+    children: (
+      <Paragraph>
+        - Navigate to the Data Management section.
+        <br />- Click Create Table and enter the required details (table name,
+        column names, data types, etc.).
+        <br />- Click Save to confirm.
+      </Paragraph>
+    ),
+  },
+  {
+    key: "3",
+    label: "3. Generate API Endpoints",
+    children: (
+      <Paragraph>
+        - Once the table is created, click Generate API.
+        <br />- API Pocket will automatically create endpoints for GET, POST,
+        PUT, PATCH, and DELETE operations.
+        <br />- Your API is now ready to use.
+      </Paragraph>
+    ),
+  },
+  {
+    key: "4",
+    label: "4. Manage Your Data",
+    children: (
+      <Paragraph>
+        - Select a table from the dashboard.
+        <br />- Use the available options to add, edit, or delete records.
+        <br />- The changes will reflect in your API responses.
+      </Paragraph>
+    ),
+  },
+  {
+    key: "5",
+    label: "5. Access API Documentation",
+    children: (
+      <Paragraph>
+        - Go to the API Documentation section.
+        <br />- You can view details of your API endpoints and test requests
+        directly from the interface.
+      </Paragraph>
+    ),
+  },
+];
 
 const UserGuide = () => {
   return (
@@ -21,7 +85,6 @@ const UserGuide = () => {
           | <Text code>PATCH</Text> | <Text code>DELETE</Text>.
         </Paragraph>
         <Divider />
-
         {/* Key Features */}
         <Title level={5}>Key Features</Title>
         <List
@@ -38,58 +101,13 @@ const UserGuide = () => {
           split={false}
         />
         <Divider />
-
         {/* User Guide */}
         <Title level={5}>How to Use API Pocket</Title>
-        <Collapse accordion>
-          <Panel header="1. Sign In or Create an Account" key="1">
-            <Paragraph>
-              - Go to{" "}
-              <a href="/auth/signin" target="_blank" rel="noreferrer">
-                API Pocket
-              </a>
-              .
-              <br />- If you already have an account, log in using your username
-              and password or an OAuth provider.
-              <br />- If you don&apos;t have an account, click Sign Up and
-              follow the registration steps.
-            </Paragraph>
-          </Panel>
-
-          <Panel header="2. Create a Data Table" key="2">
-            <Paragraph>
-              - Navigate to the Data Management section.
-              <br />- Click Create Table and enter the required details (table
-              name, column names, data types, etc.).
-              <br />- Click Save to confirm.
-            </Paragraph>
-          </Panel>
-
-          <Panel header="3. Generate API Endpoints" key="3">
-            <Paragraph>
-              - Once the table is created, click Generate API.
-              <br />- API Pocket will automatically create endpoints for GET,
-              POST, PUT, PATCH, and DELETE operations.
-              <br />- Your API is now ready to use.
-            </Paragraph>
-          </Panel>
-
-          <Panel header="4. Manage Your Data" key="4">
-            <Paragraph>
-              - Select a table from the dashboard.
-              <br />- Use the available options to add, edit, or delete records.
-              <br />- The changes will reflect in your API responses.
-            </Paragraph>
-          </Panel>
-
-          <Panel header="5. Access API Documentation" key="5">
-            <Paragraph>
-              - Go to the API Documentation section.
-              <br />- You can view details of your API endpoints and test
-              requests directly from the interface.
-            </Paragraph>
-          </Panel>
-        </Collapse>
+        <Collapse
+          accordion
+          items={collapseItems}
+          className="bg-transparent [&_.ant-collapse-header]:font-semibold"
+        />
       </Typography>
     </Card>
   );

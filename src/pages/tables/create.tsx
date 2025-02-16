@@ -20,7 +20,7 @@ const CreateTable: React.FC = () => {
       method: "POST",
       data: JSON.stringify({
         ...values,
-        ownerEmail: session?.user?.email,
+        userId: session?.user?.id,
       }),
     }),
     onSuccess: () => {

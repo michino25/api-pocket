@@ -8,6 +8,7 @@ import { IResponse } from "@/commons/types";
 import Pre from "@/components/common/Pre";
 import API_ROUTES from "@/commons/apis";
 import { preFormatter } from "@/utils/common";
+import { encryptApiKey } from "@/utils/encrypt";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -24,10 +25,10 @@ const methodColors: Record<string, string> = {
 const TableAPIDocumentation: React.FC = () => {
   const router = useRouter();
   const { tableIdPart1, tableIdPart2 } = router.query;
-  const tableId = `${tableIdPart1}${tableIdPart2}`;
+  const tableId = `${tableIdPart1 || ""}${tableIdPart2 || ""}`;
 
   const { data: session } = useSession({ required: true });
-  const username = session?.user?.email || "username";
+  const userId = session?.user?.id;
 
   const { data: tableRes, isLoading } = useQuery<IResponse<ITable>>({
     url: API_ROUTES.SCHEMA.DETAIL(tableId),
@@ -37,8 +38,7 @@ const TableAPIDocumentation: React.FC = () => {
   const table = tableRes?.data;
   const tableName = table?.tableName;
 
-  const fullBaseEndpoint = `${apiBaseUrl}/${username}/${tableId}`;
-  const securityHeader = btoa(btoa(tableId + username));
+  const fullBaseEndpoint = `${apiBaseUrl}/${userId}/${tableId}`;
 
   // Create sample object from table fields
   const sampleItemObj = table
@@ -190,6 +190,12 @@ const TableAPIDocumentation: React.FC = () => {
         <Title level={5}>Descriptions</Title>
         <Paragraph>{item.description}</Paragraph>
         <Divider />
+        <Title level={5}>Security</Title>
+        <Paragraph>
+          Include an <Text code>x-api-key</Text> header in your request:
+        </Paragraph>
+        <Pre>{encryptApiKey(tableId, userId!, item.method)}</Pre>
+        <Divider />
         <Title level={5}>Endpoint</Title>
         <Pre>{item.endpoint}</Pre>
         <Divider />
@@ -214,12 +220,6 @@ const TableAPIDocumentation: React.FC = () => {
       loading={isLoading}
       title={`API Documentation for Table: ${tableName || ""}`}
     >
-      <div className="mb-5">
-        <Title level={5}>Security</Title>
-        <Paragraph>Include the following header in your request:</Paragraph>
-        <Pre>{`x-api-key: ${securityHeader}`}</Pre>
-      </div>
-
       <Collapse
         className="bg-transparent"
         items={endpoints.map(renderCollapseItem)}

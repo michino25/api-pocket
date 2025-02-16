@@ -21,13 +21,14 @@ const DataSchema: Schema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      index: true,
     },
     data: { type: Schema.Types.Mixed, required: true },
     _deleted: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
+
+DataSchema.index({ tableId: 1, _deleted: 1 });
 
 export default mongoose.models.Data ||
   mongoose.model<IData>("Data", DataSchema);

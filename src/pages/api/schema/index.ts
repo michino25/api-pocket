@@ -1,7 +1,7 @@
+/* eslint-disable no-console */
 import type { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "@/lib/dbConnect";
 import Table from "@/models/Table";
-import User from "@/models/User";
 
 export default async function handler(
   req: NextApiRequest,
@@ -20,23 +20,18 @@ export default async function handler(
 }
 
 /**
- * GET /api/tables?owner=...
+ * GET /api/tables?userId=...
  * Lấy danh sách các bảng thuộc về owner
  */
 const getTables = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { ownerEmail } = req.query;
+  const { userId } = req.query;
 
-  if (!ownerEmail || typeof ownerEmail !== "string") {
-    return res.status(400).json({ message: "Owner email is required" });
+  if (!userId || typeof userId !== "string") {
+    return res.status(400).json({ message: "User id is required" });
   }
 
   try {
-    const user = await User.findOne({ email: ownerEmail });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const tables = await Table.find({ owner: user._id });
+    const tables = await Table.find({ owner: userId, _deleted: false });
     return res.status(200).json({ success: true, data: tables });
   } catch (error) {
     console.error("Error fetching tables:", error);
@@ -51,22 +46,17 @@ const getTables = async (req: NextApiRequest, res: NextApiResponse) => {
  * Tạo một bảng mới
  */
 const createTable = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { tableName, fields, ownerEmail } = req.body;
+  const { tableName, fields, userId } = req.body;
 
-  if (!tableName || !fields || !ownerEmail) {
+  if (!tableName || !fields || !userId) {
     return res.status(400).json({ message: "Missing required fields" });
   }
 
   try {
-    const user = await User.findOne({ email: ownerEmail });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
     const table = await Table.create({
       tableName,
       fields,
-      owner: user._id,
+      owner: userId,
     });
 
     return res.status(201).json({ success: true, data: table });

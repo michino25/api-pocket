@@ -4,7 +4,6 @@ import { ColumnsType, ColumnType } from "antd/es/table";
 
 import { formatNumber } from "@/utils/number";
 
-// Kiểu dữ liệu cho bảng
 export type TableData = {
   _id: string;
   tableName: string;

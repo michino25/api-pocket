@@ -4,7 +4,6 @@ import { useQuery } from "@/hooks/useQuery";
 import API_ROUTES from "@/commons/apis";
 import CustomButton from "@/components/common/CustomButton";
 import { ColumnsType } from "antd/es/table";
-import { splitString } from "../../utils/common";
 import { ITable } from "@/models/Table";
 import DeleteButton from "@/components/common/DeleteButton";
 import { formatToTimeString } from "@/utils/date";
@@ -13,6 +12,7 @@ import { useMutation } from "@/hooks/useMutation";
 import { useNotification } from "@/hooks/useNotification";
 import { Card } from "antd";
 import CustomTable from "@/components/common/CustomTable";
+import { splitString } from "@/utils/common";
 
 const TableList: React.FC = () => {
   const { data: session, status } = useSession();
@@ -21,7 +21,7 @@ const TableList: React.FC = () => {
 
   const { data, isLoading, refetch } = useQuery({
     url: API_ROUTES.SCHEMA.LIST,
-    config: { params: { ownerEmail: session?.user?.email } },
+    config: { params: { userId: session?.user?.id } },
     enabled: status === "authenticated",
   });
 

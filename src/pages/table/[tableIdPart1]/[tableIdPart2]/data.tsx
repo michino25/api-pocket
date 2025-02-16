@@ -9,6 +9,7 @@ import {
   DatePicker,
   Card,
   FormInstance,
+  Space,
 } from "antd";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@/hooks/useQuery";
@@ -26,6 +27,8 @@ import { ColumnsType } from "antd/es/table";
 import { IResponse } from "@/commons/types";
 import { IData } from "@/models/Data";
 import validator from "@/utils/validate";
+import { api } from "@/utils/axios";
+import { downloadFile } from "@/utils/download-file";
 
 const renderFormItem = (field: IField) => {
   switch (field.dataType) {
@@ -80,7 +83,7 @@ const TableDetail: React.FC = () => {
   const { data: session } = useSession({ required: true });
   const router = useRouter();
   const { tableIdPart1, tableIdPart2 } = router.query;
-  const tableId = `${tableIdPart1}${tableIdPart2}`;
+  const tableId = `${tableIdPart1 || ""}${tableIdPart2 || ""}`;
   const notification = useNotification();
 
   const { data: tableRes, isLoading: isTableLoading } = useQuery({
@@ -165,7 +168,7 @@ const TableDetail: React.FC = () => {
   const handleFormFinish = useCallback(
     (values: IData) => {
       submitData({
-        userEmail: session?.user?.email,
+        userId: session?.user?.id,
         data: values,
       });
     },
@@ -226,14 +229,36 @@ const TableDetail: React.FC = () => {
     ];
   }, [tableSchema, openModal, deleteData, isDeleting]);
 
+  const downloadExcel = async () => {
+    try {
+      const response = await api.get(
+        API_ROUTES.DATA_TABLE.EXPORT_EXCEL(tableId),
+        {
+          responseType: "blob",
+        }
+      );
+
+      await downloadFile(response, `${tableSchema?.tableName || "data"}.xlsx`);
+      notification.success("Data exported successfully");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      notification.error(error.message);
+    }
+  };
+
   return (
     <Card
       loading={isDataLoading || isTableLoading}
       title={`Data Management for Table: ${tableSchema?.tableName || ""}`}
       extra={
-        <CustomButton type="primary" onClick={() => openModal()} action="add">
-          Add Data
-        </CustomButton>
+        <Space>
+          <CustomButton onClick={() => downloadExcel()} action="download">
+            Export Excel
+          </CustomButton>
+          <CustomButton type="primary" onClick={() => openModal()} action="add">
+            Add Data
+          </CustomButton>
+        </Space>
       }
     >
       <CustomTable data={dataRecords?.data} unit="records" columns={columns} />

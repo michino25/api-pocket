@@ -17,7 +17,7 @@ const Schema: React.FC = () => {
   const { tables, setTables } = useSidebarTableStore();
   const router = useRouter();
   const { tableIdPart1, tableIdPart2 } = router.query;
-  const tableId = `${tableIdPart1}${tableIdPart2}`;
+  const tableId = `${tableIdPart1 || ""}${tableIdPart2 || ""}`;
   const [formChange, setFormChange] = useState(false);
 
   const {
@@ -43,7 +43,7 @@ const Schema: React.FC = () => {
       method: "PUT",
       data: JSON.stringify({
         ...values,
-        ownerEmail: session?.user?.email,
+        userId: session?.user?.id,
       }),
     }),
     onSuccess: (response) => {

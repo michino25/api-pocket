@@ -14,6 +14,7 @@ export interface ITable extends Document {
   fields: IField[];
   createdAt: Date;
   updatedAt: Date;
+  _deleted?: boolean;
 }
 
 const FieldSchema: Schema = new Schema({
@@ -33,9 +34,12 @@ const TableSchema: Schema = new Schema(
     tableName: { type: String, required: true },
     owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
     fields: [FieldSchema],
+    _deleted: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
+
+TableSchema.index({ owner: 1, _deleted: 1 });
 
 export default mongoose.models.Table ||
   mongoose.model<ITable>("Table", TableSchema);
