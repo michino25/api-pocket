@@ -7,25 +7,25 @@ export const downloadFile = async (
 ) => {
   if (response.status === 200) {
     try {
-      // Lấy tên file từ header "content-disposition"
+      // Get the file name from the "content-disposition" header
       const contentDisposition = response.headers["content-disposition"];
       const finalFileName =
         fileName || getFileName(contentDisposition) || "download";
 
-      // Lấy loại file (MIME type)
+      // Get the file type (MIME type)
       const contentType = response.headers["content-type"];
 
-      // Tạo Blob để tải file
+      // Create a Blob to download the file
       const blob = new Blob([response.data], { type: contentType });
       const url = window.URL.createObjectURL(blob);
 
-      // Tạo thẻ <a> để tải file
+      // Create an <a> element to download the file
       const anchorElement = document.createElement("a");
       anchorElement.href = url;
       anchorElement.download = finalFileName;
       anchorElement.click();
 
-      // Giải phóng bộ nhớ
+      // Release memory
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch (error) {
       throw new Error("An error occurred while downloading the file.");

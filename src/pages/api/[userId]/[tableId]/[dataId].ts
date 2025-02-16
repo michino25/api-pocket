@@ -18,6 +18,15 @@ const cors = Cors({
   allowedHeaders: ["Content-Type", "x-api-key"],
 });
 
+/**
+ * API Endpoint: /api/[userId]/[tableId]/[dataId]
+ *
+ * GET    - Retrieve details of a single data record.
+ * PUT    - Update a record with a full update (all required fields must be provided).
+ * PATCH  - Partially update a record (only update the provided fields).
+ * DELETE - Soft delete a record by setting _deleted to true.
+ */
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -25,7 +34,7 @@ export default async function handler(
   await runMiddleware(req, res, cors);
   await dbConnect();
 
-  // Lấy các tham số từ URL
+  // Get URL parameters
   const { userId, tableId, dataId } = req.query;
   if (
     typeof userId !== "string" ||
@@ -37,13 +46,13 @@ export default async function handler(
       .json({ message: "userId, tableId and dataId are required." });
   }
 
-  // Kiểm tra x-api-key
+  // Validate x-api-key
   const apiKey = req.headers["x-api-key"];
   if (!apiKey || apiKey !== encryptApiKey(tableId, userId, req.method!)) {
     return res.status(401).json({ message: "Unauthorized: Invalid API key." });
   }
 
-  // Lấy bảng theo tableId
+  // Get table by tableId
   const table = await Table.findById(tableId);
   if (!table) {
     return res.status(404).json({ message: "Table not found." });
@@ -71,7 +80,7 @@ export default async function handler(
         message: "Record details retrieved successfully.",
       });
     } else if (req.method === "PUT" || req.method === "PATCH") {
-      // === PUT: bắt buộc truyền đầy đủ các trường; PATCH: không cần check required
+      // === PUT: requires full update; PATCH: partial update (required fields not checked)
       const inputData = req.body;
       if (!inputData || typeof inputData !== "object") {
         return res
@@ -87,7 +96,7 @@ export default async function handler(
       if (!valid) {
         return res.status(400).json({ message: errors.join(" ") });
       }
-      // Kiểm tra tính duy nhất của các trường isPrimaryKey (loại trừ record hiện tại)
+      // Check unique constraints for primary fields (excluding the current record)
       const primaryErrors = await checkPrimaryUnique(
         table._id.toString(),
         table.fields,
@@ -99,7 +108,7 @@ export default async function handler(
       }
       let updated;
       if (req.method === "PUT") {
-        // Thay thế toàn bộ dữ liệu của record
+        // Replace the entire data object of the record
         updated = await Data.findOneAndUpdate(
           { _id: dataId, tableId: table._id.toString() },
           { data: validatedData },
@@ -107,7 +116,7 @@ export default async function handler(
         );
       }
       if (req.method === "PATCH") {
-        // Tạo đối tượng update riêng cho từng trường (sử dụng $set)
+        // Create an update object for each field (using $set)
         const updateObj: Record<string, unknown> = {};
         for (const key in validatedData) {
           updateObj[`data.${key}`] = validatedData[key];

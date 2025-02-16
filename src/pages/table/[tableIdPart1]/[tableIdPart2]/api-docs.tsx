@@ -22,6 +22,42 @@ const methodColors: Record<string, string> = {
   PUT: "orange",
 };
 
+const filterFromToObj = (obj: Record<string, string>) => {
+  return Object.fromEntries(
+    Object.entries(obj).filter(
+      ([, value]) => value === "number" || value === "date"
+    )
+  );
+};
+
+const queryParametersGuidelines = `
+Query Parameters Guidelines:
+
+limit (number, optional):
+  - Specifies the maximum number of records per page.
+  - If omitted (and no page is provided), all matching records are returned.
+
+page (number, optional):
+  - Specifies the page number to retrieve (starting at 1).
+  - Note: 'page' must be provided together with 'limit'; otherwise, an error is returned.
+
+from (JSON, optional):
+  - Sets a lower bound for filtering number or date fields.
+  - Example: from={"age":20} filters for records where age ≥ 20.
+
+to (JSON, optional):
+  - Sets an upper bound for filtering number or date fields.
+  - Example: to={"age":30} filters for records where age ≤ 30.
+
+Other Field Filters:
+  - For string fields: performs a case-insensitive "contains" search.
+  - For boolean fields: matches the value exactly.
+  - For number and date fields:
+      • If an exact value is provided (e.g. age=25), the filter matches records with that value.
+      • If 'from' and/or 'to' are provided, they define a range.
+      • If both an exact value and range filters are provided, both conditions are applied.
+`;
+
 const TableAPIDocumentation: React.FC = () => {
   const router = useRouter();
   const { tableIdPart1, tableIdPart2 } = router.query;
@@ -65,11 +101,16 @@ const TableAPIDocumentation: React.FC = () => {
           requests: [
             {
               type: "Query Parameters",
-              content: preFormatter({
-                ...sampleBodyObj,
-                limit: 10,
-                page: 1,
-              }),
+              content:
+                preFormatter({
+                  ...sampleBodyObj,
+                  from: filterFromToObj(sampleBodyObj),
+                  to: filterFromToObj(sampleBodyObj),
+                  limit: 10,
+                  page: 1,
+                }) +
+                "\n" +
+                queryParametersGuidelines,
             },
           ],
           responseExample: preFormatter({

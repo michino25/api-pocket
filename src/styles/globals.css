@@ -38,9 +38,9 @@ body {
 }
 
 .ant-typography code {
-  @apply bg-gray-100 border-none rounded-lg;
-  padding-inline: 0.6em;
-  padding-block: 0.5em 0.5em;
+  @apply !bg-gray-100 !border-none !rounded-lg;
+  padding-inline: 0.6em !important;
+  padding-block: 0.5em 0.5em !important;
 }
 
 h5.ant-typography {

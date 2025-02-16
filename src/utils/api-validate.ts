@@ -5,13 +5,13 @@ import Data from "@/models/Data";
 import { NextApiRequest, NextApiResponse } from "next";
 
 /**
- * Hàm chuyển đổi và validate giá trị dựa theo kiểu dữ liệu.
- * Nếu giá trị không phù hợp, hàm sẽ ném lỗi.
+ * Function to parse and validate a value based on its data type.
+ * If the value is invalid, an error is thrown.
  *
- * @param fieldKey - Tên của field
- * @param dataType - Kiểu dữ liệu của field ('string', 'number', 'boolean', 'date')
- * @param value - Giá trị cần kiểm tra
- * @returns Giá trị đã được chuyển đổi về đúng kiểu
+ * @param fieldKey - The name of the field.
+ * @param dataType - The data type of the field ('string', 'number', 'boolean', 'date').
+ * @param value - The value to be validated.
+ * @returns The value converted to the correct type.
  */
 export function parseFieldValue(
   fieldKey: string,
@@ -52,15 +52,15 @@ export function parseFieldValue(
     }
 
     default:
-      // Nếu có kiểu dữ liệu khác, trả về giá trị gốc hoặc xử lý theo logic của bạn.
+      // For any other data type, return the original value or handle according to your logic.
       return value;
   }
 }
 
 /**
- * Helper: Validate các field trong dữ liệu đầu vào
- * - Nếu checkRequired=true thì phải có đầy đủ các trường bắt buộc
- * - Kiểm tra kiểu dữ liệu dựa trên dataType của field
+ * Helper: Validate the fields in the input data.
+ * - If checkRequired=true, then all required fields must be provided.
+ * - Checks the data type based on the field's dataType.
  */
 export function validateDataFields(
   input: any,
@@ -79,7 +79,7 @@ export function validateDataFields(
       }
       return;
     }
-    // Kiểm tra kiểu dữ liệu
+    // Validate data type
     try {
       validatedData[fieldKey] = parseFieldValue(fieldKey, dataType, value);
     } catch (error: any) {
@@ -91,12 +91,14 @@ export function validateDataFields(
 }
 
 /**
- * Helper: Kiểm tra tính duy nhất của các trường isPrimaryKey
- * Nếu trong dữ liệu đầu vào có field nào có isPrimaryKey=true mà đã tồn tại trong bảng, báo lỗi
- * @param tableId - ID của bảng
- * @param fields - Mảng các field của bảng
- * @param inputData - Dữ liệu đã validate từ client
- * @param excludeRecordId - (Tùy chọn) loại trừ record hiện tại (dùng khi update)
+ * Helper: Check the uniqueness of fields marked as isPrimaryKey.
+ * If any field in the input data with isPrimaryKey=true already exists in the table,
+ * an error is reported.
+ *
+ * @param tableId - The ID of the table.
+ * @param fields - The array of fields in the table.
+ * @param inputData - The validated input data from the client.
+ * @param excludeRecordId - (Optional) Exclude the current record (used during update).
  */
 export async function checkPrimaryUnique(
   tableId: string,
@@ -128,9 +130,10 @@ export async function checkPrimaryUnique(
 }
 
 /**
- * Helper: Xây dựng query filter dựa trên các tham số truyền vào
- * Với mỗi field trong table, nếu có key tương ứng thì thêm điều kiện
- * Cũng xử lý các filter dạng "from" và "to" (áp dụng với number, date)
+ * Helper: Build a query filter based on the provided parameters.
+ * For each field in the table, if a corresponding key exists in the query,
+ * add a condition.
+ * Also handles "from" and "to" filters (applicable for number and date).
  */
 export function buildFilterQuery(
   query: any,
@@ -139,7 +142,7 @@ export function buildFilterQuery(
   const filter: Record<string, any> = {};
   const errors: string[] = [];
 
-  // Lọc theo field trực tiếp (ví dụ: ?full_name=t, ?age=20)
+  // Direct filtering (e.g., ?full_name=t, ?age=20)
   fields.forEach((field) => {
     const { fieldKey, dataType } = field;
     if (query[fieldKey] !== undefined) {
@@ -150,7 +153,7 @@ export function buildFilterQuery(
           query[fieldKey]
         );
         if (dataType === "string") {
-          // Với string, chúng ta có thể sử dụng regex để tìm kiếm.
+          // For strings, use regex for search.
           filter[`data.${fieldKey}`] = { $regex: parsedValue, $options: "i" };
         } else {
           filter[`data.${fieldKey}`] = parsedValue;
@@ -161,7 +164,7 @@ export function buildFilterQuery(
     }
   });
 
-  // Xử lý filter dạng "from" (>=)
+  // Process "from" filters (>=)
   if (query.from) {
     let fromObj;
     try {
@@ -172,7 +175,7 @@ export function buildFilterQuery(
     }
     for (const key in fromObj) {
       const field = fields.find((f) => f.fieldKey === key);
-      // Chỉ hỗ trợ filter range cho number và date
+      // Only support range filters for number and date
       if (field && (field.dataType === "number" || field.dataType === "date")) {
         try {
           const parsedValue = parseFieldValue(
@@ -193,7 +196,7 @@ export function buildFilterQuery(
     }
   }
 
-  // Xử lý filter dạng "to" (<=)
+  // Process "to" filters (<=)
   if (query.to) {
     let toObj;
     try {
@@ -222,6 +225,14 @@ export function buildFilterQuery(
   return { valid: errors.length === 0, errors, filter };
 }
 
+/**
+ * Helper: Run a middleware function.
+ *
+ * @param req - The Next.js request object.
+ * @param res - The Next.js response object.
+ * @param fn - The middleware function to run.
+ * @returns A promise that resolves when the middleware is complete.
+ */
 export function runMiddleware(
   req: NextApiRequest,
   res: NextApiResponse,

@@ -18,6 +18,16 @@ const cors = Cors({
   allowedHeaders: ["Content-Type", "x-api-key"],
 });
 
+/**
+ * API Endpoint: /api/[userId]/[tableId]
+ *
+ * GET  - Retrieve a list of data records for a given table.
+ *        Supports pagination and filtering using query parameters.
+ *
+ * POST - Create a new data record for the specified table.
+ *        Validates the input data and checks unique constraints for primary fields.
+ */
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -25,7 +35,7 @@ export default async function handler(
   await runMiddleware(req, res, cors);
   await dbConnect();
 
-  // Lấy các tham số từ URL
+  // Get URL parameters
   const { userId, tableId } = req.query;
   if (typeof userId !== "string" || typeof tableId !== "string") {
     return res
@@ -33,13 +43,13 @@ export default async function handler(
       .json({ message: "userId and tableId are required." });
   }
 
-  // Kiểm tra x-api-key trong header
+  // Validate x-api-key in header
   const apiKey = req.headers["x-api-key"];
   if (!apiKey || apiKey !== encryptApiKey(tableId, userId, req.method!)) {
     return res.status(401).json({ message: "Unauthorized: Invalid API key." });
   }
 
-  // Lấy bảng theo tableId
+  // Get table by tableId
   const table = await Table.findById(tableId);
   if (!table) {
     return res.status(404).json({ message: "Table not found." });
@@ -48,7 +58,7 @@ export default async function handler(
   try {
     if (req.method === "GET") {
       // === GET list ===
-      // Cho phép phân trang nếu truyền limit (với page mặc định là 1 nếu không truyền)
+      // Supports pagination if limit is provided (with page defaulting to 1 if not provided)
       const { limit, page, ...filters } = req.query;
       const {
         valid,
@@ -120,7 +130,7 @@ export default async function handler(
           .status(400)
           .json({ message: "Invalid data in request body." });
       }
-      // Validate dữ liệu (với checkRequired=true cho POST)
+      // Validate data (with checkRequired=true for POST)
       const {
         valid,
         errors,
@@ -129,7 +139,7 @@ export default async function handler(
       if (!valid) {
         return res.status(400).json({ message: errors.join(" ") });
       }
-      // Kiểm tra duy nhất các field isPrimaryKey
+      // Check uniqueness for primary fields
       const primaryErrors = await checkPrimaryUnique(
         table._id.toString(),
         table.fields,
