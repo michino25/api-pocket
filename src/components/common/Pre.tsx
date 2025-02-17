@@ -9,7 +9,7 @@ interface PreProps {
 const Pre = ({ className, children }: PreProps) => {
   return (
     <div className={"relative " + className}>
-      <pre className="p-5 pr-16 rounded-xl bg-gray-100 overflow-y-scroll">
+      <pre className="p-5 pr-16 rounded-xl bg-gray-100 overflow-y-auto">
         {children}
       </pre>
 

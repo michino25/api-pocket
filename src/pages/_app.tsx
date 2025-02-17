@@ -1,5 +1,4 @@
 import "@/styles/globals.css";
-import "@/styles/scrollbar.css";
 import { ConfigProvider } from "antd";
 import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
