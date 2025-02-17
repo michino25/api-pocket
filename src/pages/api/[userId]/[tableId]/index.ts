@@ -9,6 +9,7 @@ import {
   checkPrimaryUnique,
   runMiddleware,
   validateDataFields,
+  validateSort,
 } from "@/utils/api-validate";
 import Cors from "cors";
 
@@ -59,7 +60,7 @@ export default async function handler(
     if (req.method === "GET") {
       // === GET list ===
       // Supports pagination if limit is provided (with page defaulting to 1 if not provided)
-      const { limit, page, ...filters } = req.query;
+      const { limit, page, sort, ...filters } = req.query;
       const {
         valid,
         errors,
@@ -81,6 +82,19 @@ export default async function handler(
         queryConditions,
         "_id createdAt updatedAt data"
       );
+
+      if (sort) {
+        const sortValidation = validateSort(sort, table.fields);
+        if (!sortValidation.valid) {
+          return res
+            .status(400)
+            .json({ message: sortValidation.errors.join(" ") });
+        }
+        if (Object.keys(sortValidation.sort).length > 0) {
+          dataQuery = dataQuery.sort(sortValidation.sort);
+        }
+      }
+
       let currentPage = 1;
 
       if (limit !== undefined) {

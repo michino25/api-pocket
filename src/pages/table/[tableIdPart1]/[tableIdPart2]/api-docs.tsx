@@ -49,6 +49,14 @@ to (JSON, optional):
   - Sets an upper bound for filtering number or date fields.
   - Example: to={"age":30} filters for records where age ≤ 30.
 
+sort (JSON, optional):
+  - Specifies the sorting order for the results.
+  - The key is the field name, and the value determines the sort direction:
+      • 1: Ascending order (smallest to largest, A-Z, earliest to latest).
+      • -1: Descending order (largest to smallest, Z-A, latest to earliest).
+  - Multiple fields can be sorted by providing multiple key-value pairs. 
+  - The sort order follows the sequence of the keys provided.
+
 Other Field Filters:
   - For string fields: performs a case-insensitive "contains" search.
   - For boolean fields: matches the value exactly.
@@ -89,6 +97,9 @@ const TableAPIDocumentation: React.FC = () => {
         {}
       )
     : {};
+  const sortBodyObj = table
+    ? table.fields.reduce((acc, field) => ({ ...acc, [field.fieldKey]: 1 }), {})
+    : {};
 
   // Define endpoints
   const endpoints = table
@@ -106,6 +117,7 @@ const TableAPIDocumentation: React.FC = () => {
                   ...sampleBodyObj,
                   from: filterFromToObj(sampleBodyObj),
                   to: filterFromToObj(sampleBodyObj),
+                  sort: sortBodyObj,
                   limit: 10,
                   page: 1,
                 }) +

@@ -130,6 +130,55 @@ export async function checkPrimaryUnique(
 }
 
 /**
+ * Helper: Validates the sort input object to ensure it adheres to the expected format.
+ * Each value in the sort input must be either `1` (ascending) or `-1` (descending).
+ * If any errors are found, they are collected and returned along with the validation result.
+ *
+ * @param sortInput - The raw sort input object to validate. Expected format: { fieldName: 1 | -1 }.
+ * @param fields - An array of valid fields, where each field contains a `fieldKey` property.
+ * @returns An object with the following properties:
+ *   - valid: A boolean indicating whether the sort input is valid.
+ *   - errors: An array of error messages describing any validation issues.
+ *   - sort: A sanitized sort object containing only valid fields and values, preserving the input order.
+ */
+export function validateSort(
+  sortInput: any,
+  fields: any[]
+): { valid: boolean; errors: string[]; sort: any } {
+  const errors: string[] = [];
+  const validatedSort: any = {};
+  let sortObj;
+  try {
+    sortObj = typeof sortInput === "string" ? JSON.parse(sortInput) : sortInput;
+  } catch (e) {
+    sortObj = {};
+  }
+
+  const validFields = new Set(fields.map((field) => field.fieldKey));
+
+  if (sortObj && typeof sortObj === "object" && !Array.isArray(sortObj)) {
+    for (const [key, value] of Object.entries(sortObj)) {
+      if (!validFields.has(key)) {
+        errors.push(`Field '${key}' is not a valid sort field.`);
+        continue;
+      }
+      const numValue = Number(value);
+      if (isNaN(numValue) || (numValue !== 1 && numValue !== -1)) {
+        errors.push(`Sort value for '${key}' must be 1 or -1.`);
+        continue;
+      }
+      validatedSort[`data.${key}`] = numValue;
+    }
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+    sort: validatedSort,
+  };
+}
+
+/**
  * Helper: Build a query filter based on the provided parameters.
  * For each field in the table, if a corresponding key exists in the query,
  * add a condition.
