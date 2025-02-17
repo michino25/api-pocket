@@ -50,22 +50,20 @@ h5.ant-typography {
 /* Scrollbar style */
 /* Customize website's scrollbar like Mac OS  */
 /* Not supported in Firefox and IE */
-@media not all and (pointer: fine) {
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
+.not-macos ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
 
-  ::-webkit-scrollbar-track {
-    background: black;
-  }
+.not-macos ::-webkit-scrollbar-track {
+  background: inherit;
+}
 
-  ::-webkit-scrollbar-thumb {
-    background: #b4b4b4;
-    border-radius: 4px;
-  }
+.not-macos ::-webkit-scrollbar-thumb {
+  background: #b4b4b4;
+  border-radius: 4px;
+}
 
-  ::-webkit-scrollbar-thumb:hover {
-    background: #7d7d7d;
-  }
+.not-macos ::-webkit-scrollbar-thumb:hover {
+  background: #7d7d7d;
 }

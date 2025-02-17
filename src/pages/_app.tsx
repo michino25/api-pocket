@@ -5,7 +5,7 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import AdminPanelLayout from "@/components/layout/AdminPanelLayout";
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { NotificationProvider } from "@/hooks/useNotification";
 import { Analytics } from "@vercel/analytics/next";
 
@@ -29,6 +29,13 @@ function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
       borderRadius: 16,
     },
   };
+
+  //  Customize website's scrollbar like Mac OS
+  //  Not supported in Firefox and IE
+  useEffect(() => {
+    const isMacOS = /Macintosh|MacIntel/.test(navigator.userAgent);
+    if (!isMacOS) document.documentElement.classList.add("not-macos");
+  }, []);
 
   return (
     <ConfigProvider theme={antdTheme}>
