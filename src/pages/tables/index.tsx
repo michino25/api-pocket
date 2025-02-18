@@ -15,13 +15,12 @@ import CustomTable from "@/components/common/CustomTable";
 import { splitString } from "@/utils/common";
 
 const TableList: React.FC = () => {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const { setTables } = useSidebarTableStore();
   const notification = useNotification();
 
   const { data, isLoading, refetch } = useQuery({
     url: API_ROUTES.SCHEMA.LIST,
-    config: { params: { userId: session?.user?.id } },
     enabled: status === "authenticated",
   });
 

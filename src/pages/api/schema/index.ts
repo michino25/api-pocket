@@ -2,41 +2,51 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "@/lib/dbConnect";
 import Table from "@/models/Table";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/pages/api/auth/[...nextauth]";
 
 /**
  * API Endpoint: /api/tables
  *
- * GET  - Retrieve tables by owner (using query parameter: userId)
+ * GET  - Retrieve tables by owner
  * POST - Create a new table
  */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  // Validate user
+  const session = await getServerSession(req, res, authOptions);
+  const userId = session?.user.id;
+  if (!userId) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized: Invalid token.",
+    });
+  }
+
   await dbConnect();
 
   try {
     switch (req.method) {
-      // GET /api/tables?userId=...
       case "GET": {
-        const { userId } = req.query;
-        if (!userId || typeof userId !== "string") {
-          console.error("Missing or invalid userId query parameter");
-          return res.status(400).json({ message: "User id is required" });
-        }
-
-        const tables = await Table.find({ owner: userId, _deleted: false });
-        console.info(`Fetched ${tables.length} tables for user ${userId}`);
+        const tables = await Table.find({
+          owner: userId,
+          _deleted: false,
+        });
+        console.info(
+          `Fetched ${tables.length} tables for user ${session.user.id}`
+        );
         return res.status(200).json({ success: true, data: tables });
       }
 
       // POST /api/tables
       case "POST": {
-        const { tableName, fields, userId } = req.body;
-        if (!tableName || !fields || !userId) {
+        const { tableName, fields } = req.body;
+        if (!tableName || !fields) {
           console.error("Missing required fields in request body");
           return res.status(400).json({
-            message: "Missing required fields: tableName, fields, and userId",
+            message: "Missing required fields: tableName, fields",
           });
         }
 

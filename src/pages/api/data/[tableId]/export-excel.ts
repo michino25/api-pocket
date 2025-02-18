@@ -4,6 +4,9 @@ import ExcelJS from "exceljs";
 import dbConnect from "@/lib/dbConnect";
 import Table, { IField } from "@/models/Table";
 import Data from "@/models/Data";
+import dayjs from "dayjs";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/pages/api/auth/[...nextauth]";
 
 /**
  * API Endpoint: /api/data/:tableId/export-excel
@@ -14,6 +17,16 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  // Validate user
+  const session = await getServerSession(req, res, authOptions);
+  const userId = session?.user.id;
+  if (!userId) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized: Invalid token.",
+    });
+  }
+
   await dbConnect();
 
   const { tableId } = req.query;
@@ -24,7 +37,11 @@ export default async function handler(
 
   try {
     // Retrieve the table schema by tableId
-    const table = await Table.findById(tableId);
+    const table = await Table.findOne({
+      _id: tableId,
+      owner: userId,
+      _deleted: false,
+    });
     if (!table) {
       console.error(`Table ${tableId} not found.`);
       return res.status(404).json({ message: "Table not found" });
@@ -34,16 +51,19 @@ export default async function handler(
     // Retrieve all non-deleted records for the table
     const records = await Data.find({ tableId, _deleted: false });
 
+    const fileName =
+      (table.tableName || "Data") + "_" + dayjs().format("DDMMYYYY_HHmmss");
+
     // Create a new Excel workbook and worksheet
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet(table.tableName || "Data");
+    const worksheet = workbook.addWorksheet(fileName);
 
     // Build header row using field names
     const headers = fields.map((field: IField) => field.fieldName);
     worksheet.addRow(headers);
 
     // Add data rows
-    records.forEach((record) => {
+    records?.forEach((record) => {
       const row = fields.map(
         (field: IField) => record.data[field.fieldKey] ?? ""
       );
@@ -62,7 +82,7 @@ export default async function handler(
     );
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename=${table.tableName || "Data"}.xlsx`
+      `attachment; filename=${fileName}.xlsx`
     );
 
     // Write the workbook to the response stream and end the response

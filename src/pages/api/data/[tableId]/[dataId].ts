@@ -2,6 +2,8 @@
 import dbConnect from "@/lib/dbConnect";
 import Data from "@/models/Data";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/pages/api/auth/[...nextauth]";
 
 /**
  * API Endpoint: /api/data/:tableId/:dataId
@@ -14,6 +16,16 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  // Validate user
+  const session = await getServerSession(req, res, authOptions);
+  const userId = session?.user.id;
+  if (!userId) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized: Invalid token.",
+    });
+  }
+
   await dbConnect();
 
   const { tableId, dataId } = req.query;
@@ -29,6 +41,7 @@ export default async function handler(
         const record = await Data.findOne({
           _id: dataId,
           tableId,
+          userId,
           _deleted: false,
         });
         if (!record) {
@@ -42,8 +55,8 @@ export default async function handler(
       // PUT: Update a record (full update)
       case "PUT": {
         const updatedRecord = await Data.findOneAndUpdate(
-          { _id: dataId, tableId },
-          req.body,
+          { _id: dataId, tableId, userId, _deleted: false },
+          { data: req.body },
           { new: true }
         );
         if (!updatedRecord) {
@@ -57,7 +70,7 @@ export default async function handler(
       // DELETE: Soft-delete a record by setting _deleted to true
       case "DELETE": {
         const deletedRecord = await Data.findOneAndUpdate(
-          { _id: dataId, tableId },
+          { _id: dataId, tableId, userId, _deleted: false },
           { _deleted: true },
           { new: true }
         );

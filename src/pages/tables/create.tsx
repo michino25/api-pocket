@@ -1,7 +1,6 @@
 import React from "react";
 import { Form, Card } from "antd";
 import { useRouter } from "next/router";
-import { useSession } from "next-auth/react";
 import { useMutation } from "@/hooks/useMutation";
 import API_ROUTES from "@/commons/apis";
 import TableSchemaForm from "@/components/feature/TableSchemaForm";
@@ -9,7 +8,6 @@ import ActionButton from "@/components/common/ActionButton";
 import { useNotification } from "@/hooks/useNotification";
 
 const CreateTable: React.FC = () => {
-  const { data: session } = useSession({ required: true });
   const [form] = Form.useForm();
   const router = useRouter();
   const notification = useNotification();
@@ -18,10 +16,7 @@ const CreateTable: React.FC = () => {
     mutationFn: (values) => ({
       url: API_ROUTES.SCHEMA.LIST,
       method: "POST",
-      data: JSON.stringify({
-        ...values,
-        userId: session?.user?.id,
-      }),
+      data: JSON.stringify(values),
     }),
     onSuccess: () => {
       notification.success("Table created successfully!");

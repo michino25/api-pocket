@@ -3,6 +3,8 @@ import dbConnect from "@/lib/dbConnect";
 import Data from "@/models/Data";
 import Table from "@/models/Table";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/pages/api/auth/[...nextauth]";
 
 /**
  * API Endpoint: /api/schema/:tableId
@@ -12,9 +14,18 @@ import type { NextApiRequest, NextApiResponse } from "next";
  * DELETE - Soft delete table and its related data
  */
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { tableId } = req.query;
+  // Validate user
+  const session = await getServerSession(req, res, authOptions);
+  const userId = session?.user.id;
+  if (!userId) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized: Invalid token.",
+    });
+  }
 
   // Validate tableId
+  const { tableId } = req.query;
   if (!tableId || typeof tableId !== "string") {
     return res.status(400).json({
       success: false,
@@ -28,7 +39,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     switch (req.method) {
       // GET: Retrieve table details
       case "GET": {
-        const table = await Table.findById(tableId);
+        const table = await Table.findOne({
+          _id: tableId,
+          owner: userId,
+          _deleted: false,
+        });
         if (!table) {
           return res.status(404).json({
             success: false,
@@ -49,8 +64,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           });
         }
 
-        const updatedTable = await Table.findByIdAndUpdate(
-          tableId,
+        const updatedTable = await Table.findOneAndUpdate(
+          {
+            _id: tableId,
+            owner: userId,
+            _deleted: false,
+          },
           updateData,
           {
             new: true, // Return the updated document
@@ -73,9 +92,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
       // DELETE: Soft delete table and related data
       case "DELETE": {
-        const updatedTable = await Table.findByIdAndUpdate(tableId, {
-          _deleted: true,
-        });
+        const updatedTable = await Table.findOneAndUpdate(
+          {
+            _id: tableId,
+            owner: userId,
+            _deleted: false,
+          },
+          {
+            _deleted: true,
+          }
+        );
 
         if (!updatedTable) {
           return res.status(404).json({

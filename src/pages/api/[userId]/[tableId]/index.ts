@@ -50,8 +50,12 @@ export default async function handler(
     return res.status(401).json({ message: "Unauthorized: Invalid API key." });
   }
 
-  // Get table by tableId
-  const table = await Table.findById(tableId);
+  // Get table
+  const table = await Table.findOne({
+    _id: tableId,
+    owner: userId,
+    _deleted: false,
+  });
   if (!table) {
     return res.status(404).json({ message: "Table not found." });
   }

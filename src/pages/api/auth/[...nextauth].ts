@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import NextAuth from "next-auth";
+import NextAuth, { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -7,7 +7,7 @@ import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
 
-export default NextAuth({
+export const authOptions: AuthOptions = {
   // Define authentication providers
   providers: [
     // Credentials provider for traditional email/password login
@@ -119,4 +119,6 @@ export default NextAuth({
       return true;
     },
   },
-});
+};
+
+export default NextAuth(authOptions);

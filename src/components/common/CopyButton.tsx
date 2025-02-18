@@ -16,6 +16,7 @@ const CopyButton = ({
       await navigator.clipboard.writeText(textToCopy);
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       notification.error("Failed to copy text:");
     }

@@ -11,7 +11,6 @@ import {
   FormInstance,
   Space,
 } from "antd";
-import { useSession } from "next-auth/react";
 import { useQuery } from "@/hooks/useQuery";
 import { useMutation } from "@/hooks/useMutation";
 import { IField } from "@/models/Table";
@@ -81,7 +80,6 @@ const DataForm: React.FC<DataFormProps> = ({ onFinish, fields, form }) => (
 );
 
 const TableDetail: React.FC = () => {
-  const { data: session } = useSession({ required: true });
   const router = useRouter();
   const { tableIdPart1, tableIdPart2 } = router.query;
   const tableId = `${tableIdPart1 || ""}${tableIdPart2 || ""}`;
@@ -166,16 +164,6 @@ const TableDetail: React.FC = () => {
     },
   });
 
-  const handleFormFinish = useCallback(
-    (values: IData) => {
-      submitData({
-        userId: session?.user?.id,
-        data: values,
-      });
-    },
-    [submitData, session]
-  );
-
   const { mutate: deleteData, isMutating: isDeleting } = useMutation({
     mutationFn: ({ _id }: { _id: string }) => ({
       method: "DELETE",
@@ -239,7 +227,7 @@ const TableDetail: React.FC = () => {
         }
       );
 
-      await downloadFile(response, `${tableSchema?.tableName || "data"}.xlsx`);
+      await downloadFile(response);
       notification.success("Data exported successfully");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -272,7 +260,7 @@ const TableDetail: React.FC = () => {
           footer={null}
         >
           <DataForm
-            onFinish={handleFormFinish}
+            onFinish={submitData}
             fields={tableSchema.fields}
             form={form}
           />

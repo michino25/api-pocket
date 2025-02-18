@@ -2,6 +2,8 @@
 import dbConnect from "@/lib/dbConnect";
 import Data from "@/models/Data";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/pages/api/auth/[...nextauth]";
 
 /**
  * API Endpoint: /api/data/:tableId
@@ -13,6 +15,16 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  // Validate user
+  const session = await getServerSession(req, res, authOptions);
+  const userId = session?.user.id;
+  if (!userId) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized: Invalid token.",
+    });
+  }
+
   await dbConnect();
 
   const { tableId } = req.query;
@@ -25,7 +37,11 @@ export default async function handler(
     switch (req.method) {
       // GET: Retrieve the list of data records for the specified table
       case "GET": {
-        const records = await Data.find({ tableId, _deleted: false });
+        const records = await Data.find({
+          tableId,
+          userId,
+          _deleted: false,
+        });
         console.info(
           `Fetched ${records.length} data record(s) for table ${tableId}`
         );
@@ -34,14 +50,11 @@ export default async function handler(
 
       // POST: Create a new data record for the specified table
       case "POST": {
-        const { userId, data } = req.body;
-        if (!userId || !data) {
-          console.error("Missing required fields: userId or data");
-          return res.status(400).json({
-            message: "Missing required fields: userId or data",
-          });
-        }
-        const newRecord = await Data.create({ tableId, userId, data });
+        const newRecord = await Data.create({
+          tableId,
+          userId,
+          data: req.body,
+        });
         console.info(
           `Created new data record for table ${tableId} with id ${newRecord._id}`
         );

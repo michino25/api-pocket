@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Form, Card, Alert } from "antd";
 import { useRouter } from "next/router";
-import { useSession } from "next-auth/react";
 import { useMutation, useQuery } from "@/hooks";
 import API_ROUTES from "@/commons/apis";
 import TableSchemaForm from "@/components/feature/TableSchemaForm";
@@ -11,7 +10,6 @@ import { useSidebarTableStore } from "@/stores/useSidebarTableStore";
 import { ITable } from "@/models/Table";
 
 const Schema: React.FC = () => {
-  const { data: session } = useSession({ required: true });
   const [form] = Form.useForm();
   const notification = useNotification();
   const { tables, setTables } = useSidebarTableStore();
@@ -41,10 +39,7 @@ const Schema: React.FC = () => {
     mutationFn: (values) => ({
       url: API_ROUTES.SCHEMA.DETAIL(tableId),
       method: "PUT",
-      data: JSON.stringify({
-        ...values,
-        userId: session?.user?.id,
-      }),
+      data: JSON.stringify(values),
     }),
     onSuccess: (response) => {
       notification.success("Table schema edited successfully!");

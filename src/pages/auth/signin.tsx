@@ -53,6 +53,7 @@ const LoginPage: React.FC = () => {
       } else {
         router.push(res?.url || "/tables");
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       message.error("Login failed. Please try again.");
     }
@@ -62,6 +63,7 @@ const LoginPage: React.FC = () => {
   const handleSocialLogin = async (provider: "google" | "github") => {
     try {
       await signIn(provider, { callbackUrl: "/tables" });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       message.error(
         `${

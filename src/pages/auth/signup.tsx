@@ -81,6 +81,7 @@ const SignupPage: React.FC = () => {
 
       notification.success("Account created successfully!");
       router.push("/tables");
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       notification.error("Error during registration");
     } finally {
@@ -92,6 +93,7 @@ const SignupPage: React.FC = () => {
   const handleSocialSignup = async (provider: "github" | "google") => {
     try {
       await signIn(provider, { callbackUrl: "/tables" });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       message.error(
         `${
