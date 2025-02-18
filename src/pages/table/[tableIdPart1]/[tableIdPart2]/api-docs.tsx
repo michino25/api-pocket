@@ -30,10 +30,7 @@ const filterFromToObj = (obj: Record<string, string>) => {
   );
 };
 
-const queryParametersGuidelines = `
-Query Parameters Guidelines:
-
-limit (number, optional):
+const queryParametersGuidelines = `limit (number, optional):
   - Specifies the maximum number of records per page.
   - If omitted (and no page is provided), all matching records are returned.
 
@@ -88,7 +85,7 @@ const TableAPIDocumentation: React.FC = () => {
   const sampleItemObj = table
     ? table.fields.reduce(
         (acc, field) => ({ ...acc, [field.fieldKey]: field.dataType }),
-        { _id: "string" }
+        { id: "string" }
       )
     : {};
   const sampleBodyObj = table
@@ -100,6 +97,10 @@ const TableAPIDocumentation: React.FC = () => {
   const sortBodyObj = table
     ? table.fields.reduce((acc, field) => ({ ...acc, [field.fieldKey]: 1 }), {})
     : {};
+  const fromToBodyObj =
+    Object.keys(filterFromToObj(sampleBodyObj)).length !== 0
+      ? filterFromToObj(sampleBodyObj)
+      : null;
 
   // Define endpoints
   const endpoints = table
@@ -112,17 +113,18 @@ const TableAPIDocumentation: React.FC = () => {
           requests: [
             {
               type: "Query Parameters",
-              content:
-                preFormatter({
-                  ...sampleBodyObj,
-                  from: filterFromToObj(sampleBodyObj),
-                  to: filterFromToObj(sampleBodyObj),
-                  sort: sortBodyObj,
-                  limit: 10,
-                  page: 1,
-                }) +
-                "\n" +
-                queryParametersGuidelines,
+              content: preFormatter({
+                ...sampleBodyObj,
+                ...(fromToBodyObj ? { from: fromToBodyObj } : {}),
+                ...(fromToBodyObj ? { to: fromToBodyObj } : {}),
+                sort: sortBodyObj,
+                limit: 10,
+                page: 1,
+              }),
+            },
+            {
+              type: "Query Parameters Guidelines",
+              content: queryParametersGuidelines,
             },
           ],
           responseExample: preFormatter({

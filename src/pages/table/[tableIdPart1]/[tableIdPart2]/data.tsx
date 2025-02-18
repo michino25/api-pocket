@@ -49,6 +49,7 @@ const renderFormItem = (field: IField) => {
           showTime
           className="w-full"
           placeholder={`Select ${field.fieldName.toLowerCase()}`}
+          format="DD/MM/YYYY HH:mm:ss"
         />
       );
     default:
