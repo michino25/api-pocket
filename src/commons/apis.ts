@@ -13,6 +13,12 @@ export const API_ROUTES = {
     LIST: "/schema",
     DETAIL: (tableId: string) => `/schema/${tableId}`,
   },
+
+  FILE: {
+    GET_LIST: "/files",
+    UPLOAD: "/files",
+    DELETE: (fileId: string) => `/files/${fileId}`,
+  },
 };
 
 export default API_ROUTES;

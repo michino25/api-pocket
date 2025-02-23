@@ -34,7 +34,7 @@ const LoginPage: React.FC = () => {
 
   const { status } = useSession();
   if (status === "authenticated") {
-    router.push("/tables");
+    router.push("/dashboard");
     return null;
   }
 
@@ -45,13 +45,13 @@ const LoginPage: React.FC = () => {
         redirect: false,
         email: values.email,
         password: values.password,
-        callbackUrl: "/tables",
+        callbackUrl: "/dashboard",
       });
 
       if (res?.error) {
         message.error(res.error);
       } else {
-        router.push(res?.url || "/tables");
+        router.push(res?.url || "/dashboard");
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
@@ -62,7 +62,7 @@ const LoginPage: React.FC = () => {
   // Handle social login
   const handleSocialLogin = async (provider: "google" | "github") => {
     try {
-      await signIn(provider, { callbackUrl: "/tables" });
+      await signIn(provider, { callbackUrl: "/dashboard" });
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       message.error(

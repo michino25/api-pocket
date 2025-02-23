@@ -80,3 +80,12 @@ export const splitString = (input: string) => {
 
 export const preFormatter = (obj: Record<string, unknown>) =>
   JSON.stringify(obj, null, 2);
+
+export const parseJSON = (jsonString: string, defaultValue = null) => {
+  try {
+    return JSON.parse(jsonString);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {
+    return defaultValue;
+  }
+};

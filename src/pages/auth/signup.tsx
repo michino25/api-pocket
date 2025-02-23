@@ -41,7 +41,7 @@ const SignupPage: React.FC = () => {
 
   const { status } = useSession();
   if (status === "authenticated") {
-    router.push("/tables");
+    router.push("/dashboard");
     return null;
   }
 
@@ -80,7 +80,7 @@ const SignupPage: React.FC = () => {
       }
 
       notification.success("Account created successfully!");
-      router.push("/tables");
+      router.push("/dashboard");
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       notification.error("Error during registration");
@@ -92,7 +92,7 @@ const SignupPage: React.FC = () => {
   // Handle social signup
   const handleSocialSignup = async (provider: "github" | "google") => {
     try {
-      await signIn(provider, { callbackUrl: "/tables" });
+      await signIn(provider, { callbackUrl: "/dashboard" });
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       message.error(

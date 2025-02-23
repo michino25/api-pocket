@@ -1,3 +1,5 @@
+import { Tooltip } from "antd";
+
 export const unAccent = (str: string) => {
   str = str.toLowerCase();
   str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
@@ -11,3 +13,22 @@ export const unAccent = (str: string) => {
   str = str.replace(/\u02C6|\u0306|\u031B/g, "");
   return str;
 };
+
+export const tooltipRenderer =
+  (maxWidth = 280) =>
+  // eslint-disable-next-line react/display-name
+  (string: string) =>
+    (
+      <Tooltip title={string} placement="topLeft">
+        <div
+          style={{
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            maxWidth,
+          }}
+        >
+          {string}
+        </div>
+      </Tooltip>
+    );

@@ -164,7 +164,7 @@ const TableDetail: React.FC = () => {
     },
   });
 
-  const { mutate: deleteData, isMutating: isDeleting } = useMutation({
+  const { mutate: deleteData } = useMutation({
     mutationFn: ({ _id }: { _id: string }) => ({
       method: "DELETE",
       url: API_ROUTES.DATA_TABLE.DETAIL(tableId, _id),
@@ -206,7 +206,6 @@ const TableDetail: React.FC = () => {
             </CustomButton>
             <DeleteButton
               info=""
-              isPending={isDeleting}
               mutate={() => deleteData(record)}
               type="primary"
             >
@@ -216,7 +215,7 @@ const TableDetail: React.FC = () => {
         ),
       },
     ];
-  }, [tableSchema, openModal, deleteData, isDeleting]);
+  }, [tableSchema, openModal, deleteData]);
 
   const downloadExcel = async () => {
     try {

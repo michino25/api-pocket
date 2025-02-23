@@ -3,13 +3,11 @@ import CustomButton from "./CustomButton";
 
 const DeleteButton = ({
   mutate,
-  isPending,
   info,
   children = "Delete",
   ...rest
 }: {
   mutate: () => void;
-  isPending: boolean;
   info: string;
 } & ButtonProps) => {
   const [modal, contextHolder] = Modal.useModal();
@@ -27,12 +25,7 @@ const DeleteButton = ({
 
   return (
     <>
-      <CustomButton
-        action="delete"
-        onClick={handleDelete}
-        disabled={isPending}
-        {...rest}
-      >
+      <CustomButton action="delete" onClick={handleDelete} {...rest}>
         {children}
       </CustomButton>
       {contextHolder}

@@ -30,7 +30,7 @@ const TableList: React.FC = () => {
     }
   }, [data, setTables]);
 
-  const { mutate: deleteTable, isMutating } = useMutation({
+  const { mutate: deleteTable } = useMutation({
     mutationFn: ({ _id }) => ({
       method: "DELETE",
       url: API_ROUTES.SCHEMA.DETAIL(_id),
@@ -61,7 +61,10 @@ const TableList: React.FC = () => {
       render: (_, { _id }) => {
         const ids = splitString(_id as string);
         return (
-          <CustomButton action="view" to={`/table/${ids[0]}/${ids[1]}/schema`}>
+          <CustomButton
+            action="view"
+            to={`/data-forge/${ids[0]}/${ids[1]}/schema`}
+          >
             View Schema
           </CustomButton>
         );
@@ -73,7 +76,10 @@ const TableList: React.FC = () => {
       render: (_, { _id }) => {
         const ids = splitString(_id as string);
         return (
-          <CustomButton action="view" to={`/table/${ids[0]}/${ids[1]}/data`}>
+          <CustomButton
+            action="view"
+            to={`/data-forge/${ids[0]}/${ids[1]}/data`}
+          >
             View Data
           </CustomButton>
         );
@@ -87,7 +93,7 @@ const TableList: React.FC = () => {
         return (
           <CustomButton
             action="view"
-            to={`/table/${ids[0]}/${ids[1]}/api-docs`}
+            to={`/data-forge/${ids[0]}/${ids[1]}/api-docs`}
           >
             View API Docs
           </CustomButton>
@@ -100,7 +106,6 @@ const TableList: React.FC = () => {
       render: (_, { _id, tableName }) => (
         <DeleteButton
           mutate={() => deleteTable({ _id, tableName })}
-          isPending={isMutating}
           info={tableName}
           type="primary"
         >
@@ -114,7 +119,7 @@ const TableList: React.FC = () => {
     <Card
       title="Table List"
       extra={
-        <CustomButton type="primary" to="/tables/create" action="add">
+        <CustomButton type="primary" to="/data-forge/create" action="add">
           Create New Table
         </CustomButton>
       }

@@ -20,7 +20,7 @@ const CreateTable: React.FC = () => {
     }),
     onSuccess: () => {
       notification.success("Table created successfully!");
-      router.push("/tables");
+      router.push("/dashboard");
     },
     onError: (error: Error) => {
       notification.error(error.message || "Error creating table");

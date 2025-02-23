@@ -15,6 +15,11 @@ export const formatNumberAbbreviation = (number?: number) => {
   return numeral(number).format("0,0.[00]a");
 };
 
+export const formatBytes = (number?: number) => {
+  if (number === undefined) return "";
+  return numeral(number).format("'0. b'");
+};
+
 // Input Number
 
 export const parserValueToNumber = (value?: string | null) => {
