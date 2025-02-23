@@ -4,13 +4,17 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   GalleryVerticalEnd,
-  Table2,
   SquareLibrary,
   TextQuote,
   FileText,
   NotebookText,
   PanelLeftClose,
   PanelLeftOpen,
+  CloudUpload,
+  KeyRound,
+  Database,
+  Zap,
+  Braces,
 } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { useSidebarTableStore } from "@/stores/useSidebarTableStore";
@@ -19,8 +23,10 @@ import { ItemType, MenuItemType } from "antd/es/menu/interface";
 
 const { Sider } = Layout;
 
+const featureRoutes = ["auth-core", "data-forge", "file-hub", "socket-flow"];
+
 const locationConverter = (location: string[]) =>
-  location && location[0] === "table"
+  location && featureRoutes.includes(location[0])
     ? [`${location[0]}/${location[1]}`, `${location[2]}/${location[3]}`]
     : location;
 
@@ -35,42 +41,96 @@ const Sidebar: React.FC = () => {
   const menu: ItemType<MenuItemType>[] = useMemo(
     () => [
       {
-        key: "tables",
+        key: "dashboard",
         icon: <GalleryVerticalEnd size={16} />,
         label: "Dashboard",
       },
-      { type: "divider" },
-      {
-        label: "Tables",
-        type: "group",
-        children: tables?.map(({ _id, tableName }) => ({
-          key: "table/" + splitString(_id)[0],
-          icon: <Table2 size={16} />,
-          label: tableName,
-          children: [
-            {
-              key: splitString(_id)[1] + "/schema",
-              icon: <SquareLibrary size={16} />,
-              label: "Schema",
-            },
-            {
-              key: splitString(_id)[1] + "/data",
-              icon: <TextQuote size={16} />,
-              label: "Data",
-            },
-            {
-              key: splitString(_id)[1] + "/api-docs",
-              icon: <FileText size={16} />,
-              label: "API Docs",
-            },
-          ],
-        })),
-      },
-      { type: "divider" },
       {
         key: "user-guide",
         label: "User Guide",
         icon: <NotebookText size={16} />,
+      },
+      { type: "divider" },
+      {
+        label: "Auth Core",
+        type: "group",
+        children: [
+          {
+            key: "auth-core/overview",
+            icon: <KeyRound size={16} />,
+            label: "Overview",
+          },
+          {
+            key: "auth-core/user",
+            icon: <Braces size={16} />,
+            label: "User",
+          },
+        ],
+      },
+      { type: "divider" },
+      {
+        label: "Data Forge",
+        type: "group",
+        children: [
+          {
+            key: "data-forge/overview",
+            icon: <Database size={16} />,
+            label: "Overview",
+          },
+          ...(tables
+            ? tables.map(({ _id, tableName }) => ({
+                key: "data-forge/" + splitString(_id)[0],
+                icon: <Braces size={16} />,
+                label: tableName,
+                children: [
+                  {
+                    key: splitString(_id)[1] + "/schema",
+                    icon: <SquareLibrary size={16} />,
+                    label: "Schema",
+                  },
+                  {
+                    key: splitString(_id)[1] + "/data",
+                    icon: <TextQuote size={16} />,
+                    label: "Data",
+                  },
+                  {
+                    key: splitString(_id)[1] + "/api-docs",
+                    icon: <FileText size={16} />,
+                    label: "API Docs",
+                  },
+                ],
+              }))
+            : []),
+        ],
+      },
+      { type: "divider" },
+      {
+        label: "File Hub",
+        type: "group",
+        children: [
+          {
+            key: "file-hub/uploaded-files",
+            icon: <CloudUpload size={16} />,
+            label: "Uploaded Files",
+          },
+          {
+            key: "file-hub/docs",
+            icon: <FileText size={16} />,
+            label: "File Hub Docs",
+          },
+        ],
+      },
+      { type: "divider" },
+      {
+        label: "Socket Flow",
+        type: "group",
+        children: [
+          {
+            key: "socket-flow/docs",
+            icon: <Zap size={16} />,
+            label: "Socket Docs",
+          },
+        ],
       },
     ],
     [tables]
@@ -105,7 +165,7 @@ const Sidebar: React.FC = () => {
       collapsed={collapsed}
     >
       <Link
-        href="/tables"
+        href="/dashboard"
         className="flex items-center w-full justify-center py-3"
       >
         <Image
@@ -137,6 +197,7 @@ const Sidebar: React.FC = () => {
       <Menu
         className="!border-none mt-auto"
         items={[
+          { type: "divider" },
           {
             key: "menu",
             label: collapsed ? "Expand" : "Collapse",

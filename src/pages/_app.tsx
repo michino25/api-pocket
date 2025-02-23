@@ -9,13 +9,21 @@ import { Fragment, useEffect } from "react";
 import { NotificationProvider } from "@/hooks/useNotification";
 import { Analytics } from "@vercel/analytics/next";
 
+const adminPanelRoutes = [
+  "/user-guide",
+  "/dashboard",
+  "/data-forge",
+  "/file-hub",
+  "/socket-flow",
+  "/auth-core",
+];
+
 function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   const router = useRouter();
 
-  const isAdminPanelRoute =
-    router.pathname.startsWith("/user-guide") ||
-    router.pathname.startsWith("/tables") ||
-    router.pathname.startsWith("/table");
+  const isAdminPanelRoute = adminPanelRoutes.some((route) =>
+    router.pathname.startsWith(route)
+  );
 
   const Layout = isAdminPanelRoute ? AdminPanelLayout : Fragment;
 
